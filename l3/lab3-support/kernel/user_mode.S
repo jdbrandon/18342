@@ -26,5 +26,5 @@ user_mode:
 	push	{r1}
 	push	{r0}
 	mov	lr, pc
-	ldr	pc, =0xa2000000
+	ldr	pc, =0xa0000000
 	swi	0x900001 @exit swi

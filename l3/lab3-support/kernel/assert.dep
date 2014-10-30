@@ -1,0 +1,26 @@
+/home/jeff/cmu/18342/l3/lab3-support/kernel/assert.o: \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/assert.c \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/assert.h \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/stdarg.h \
+ /home/jeff/cmu/18342/l3/lab3-support/uboot/include/exports.h \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/types.h \
+ /home/jeff/cmu/18342/l3/lab3-support/uboot/include/_exports.h \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/arm/psr.h \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/inline.h \
+ /home/jeff/cmu/18342/l3/lab3-support/kernel/include/arm/exception.h
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/assert.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/stdarg.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/uboot/include/exports.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/types.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/uboot/include/_exports.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/arm/psr.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/inline.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/kernel/include/arm/exception.h:

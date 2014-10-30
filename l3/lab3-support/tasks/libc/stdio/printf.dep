@@ -1,0 +1,23 @@
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/stdio/printf.o: \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/stdio/printf.c \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/stdio.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/stdarg.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/sys/types.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/types.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/unistd.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/fileno.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/stdio/doprnt.h
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/stdio.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/stdarg.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/sys/types.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/types.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/unistd.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/fileno.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/stdio/doprnt.h:

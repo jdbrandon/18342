@@ -3,8 +3,8 @@
 #
 
 # Change this to blank if you are on the gumstix
-#CCPREFIX = arm-linux-
-CCPREFIX =
+CCPREFIX = arm-linux-gnueabi-
+#CCPREFIX =
 
 MAKEFLAGS += -rR
 
@@ -22,7 +22,7 @@ all: package kernel
 ############### ENVIRONMENT #####################
 
 CC = $(CCPREFIX)gcc
-LD = $(CCPREFIX)ld -v
+LD = $(CCPREFIX)ld
 AR = $(CCPREFIX)ar
 OBJCOPY = $(CCPREFIX)objcopy
 RM = rm -f

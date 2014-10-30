@@ -1,0 +1,11 @@
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/string/strcat.o: \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/string/strcat.c \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/string.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/sys/types.h \
+ /home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/types.h
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/string.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/sys/types.h:
+
+/home/jeff/cmu/18342/l3/lab3-support/tasks/libc/include/bits/types.h:

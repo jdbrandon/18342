@@ -1,0 +1,6 @@
+*.img
+*.tar.gz
+*.tgz
+*.tar
+*.img.bad
+*.save

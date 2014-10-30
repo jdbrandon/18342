@@ -19,8 +19,6 @@ extern void exit_user(unsigned, unsigned, unsigned);
 #include <exports.h>
 
 /* global variables */
-unsigned instr1;	//first instruction we clobber
-unsigned instr2;	//second instruction we clobber
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
 

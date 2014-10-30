@@ -3,8 +3,8 @@
 #
 
 # Change this to blank if you are on the gumstix
-CCPREFIX = arm-linux-gnueabi-
-#CCPREFIX =
+#CCPREFIX = arm-linux-gnueabi-
+CCPREFIX =
 
 MAKEFLAGS += -rR
 

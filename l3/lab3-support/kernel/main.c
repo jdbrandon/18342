@@ -18,7 +18,7 @@
 #define RETURN 13
 
 /* include necessary header files */
-#include <bits/types.h>
+#include <types.h>
 #include <bits/errno.h>
 #include <bits/fileno.h>
 #include <bits/swi.h>

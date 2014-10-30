@@ -59,3 +59,7 @@ int main(int argc, char** argv)
 
 	return 0;
 }
+
+int __aeabi_unwind_cpp_pr0(int a, int b){
+	return 0;
+}

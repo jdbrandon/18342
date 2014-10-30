@@ -2,8 +2,8 @@
 echo "making"
 make
 echo "mounting mmc1"
-mount /mnt/mmc1
-cp kernel/kernel.bin /mnt/mmc1
-cp tasks/bin/*.bin /mnt/mmc1
-umount /mnt/mmc1
+cp kernel/kernel.bin /media/card
+cp tasks/bin/*.bin /media/card
+umount /media/card
+mount /media/card
 echo "done mounting"

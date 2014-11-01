@@ -34,6 +34,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 	size_t count;
 	size_t pcount = 0; //processed char count
 	unsigned *ret = args;
+
 	switch(swi_num){
 	case EXIT_SWI:
 		/* exit */
@@ -101,6 +102,12 @@ void c_swi_handler(int swi_num, unsigned *args){
 			pcount++;
 		}
 		*ret = pcount;
+		break;
+	case TIME_SWI:
+		/*do time*/
+		break;
+	case SLEEP_SWI:
+		/*do sleep*/
 		break;
 	default:
 		*args = -0xbadc0de;

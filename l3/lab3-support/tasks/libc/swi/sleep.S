@@ -2,13 +2,15 @@
  *
  * @brief sleep sycall wrapper
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-10-31
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @date 2014-11-01
  */
 
 #include <asm.h>
 
 	.file "sleep.S"
 
-FUNC(sleep)
-	@ Add code here.  Put your names at the top.
+@FUNC(sleep)
+sleep:
+	swi SLEEP_SWI
+	movs pc, lr

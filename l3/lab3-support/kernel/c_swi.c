@@ -10,6 +10,25 @@
 #define NEW_LINE 10
 #define RETURN 13
 
+/* Memory mapped io constants */
+#define TIMER_BASE_ADDR 0x40a00000
+#define OSMR_0 (TIMER_BASE_ADDR + 0x0) /* OS Timer Match register 0 */
+#define OSMR_1 (TIMER_BASE_ADDR + 0x4) /* OS Timer Match register 1 */
+#define OSMR_2 (TIMER_BASE_ADDR + 0x8) /* OS Timer Match register 2 */
+#define OSMR_3 (TIMER_BASE_ADDR + 0xc) /* OS Timer Match register 3 */
+#define OSCR (TIMER_BASE_ADDR + 0x10) /* OS Timer counter register */
+#define OSSR (TIMER_BASE_ADDR + 0x14) /* OS Timer status register */
+#define OWER (TIMER_BASE_ADDR + 0x18) /* OS Timer watchdog enable register */
+#define OIER (TIMER_BASE_ADDR + 0x1c) /* OS Timer interrupt enable register */
+
+#define INTERRUPT_BASE 0x40d00000
+#define ICIP (INTERRUPT_BASE + 0x0)  /* Interrupt controller IRQ pending register */
+#define ICMR (INTERRUPT_BASE + 0x4)  /* Interrupt controller mask register */
+#define ICLR (INTERRUPT_BASE + 0x8)  /* Interrupt controller level register */
+#define ICFP (INTERRUPT_BASE + 0xc)  /* Interrupt controller FIQ pending register */
+#define ICPR (INTERRUPT_BASE + 0x10) /* Interrupt controller pending register */
+#define ICCR (INTERRUPT_BASE + 0x14) /* Interrupt controller control register */
+
 extern void exit_user(unsigned, unsigned, unsigned);
 
 #include <types.h>
@@ -24,7 +43,7 @@ void dowrite(unsigned*, unsigned*);
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
-
+extern unsigned interrupt;
 /* c_swi_handler - custom swi handler called by assembly swi handler
    after state has been saved/restored appropriately.
 	Parameters: 
@@ -49,9 +68,11 @@ void c_swi_handler(int swi_num, unsigned *args){
 		break;
 	case TIME_SWI:
 		/*do time*/
+		dotime(args, ret);
 		break;
 	case SLEEP_SWI:
 		/*do sleep*/
+		dosleep(args);
 		break;
 	default:
 		*args = -0xbadc0de;
@@ -127,4 +148,22 @@ void dowrite(unsigned* args, unsigned* ret){
 		pcount++;
 	}
 	*ret = pcount;
+}
+
+void dotime(unsigned* args, unsigned* ret){
+	volatile unsigned *currenttime = (unsigned *)OSCR;
+	*ret = currenttime/3686.4;
+}
+
+void dosleep(unsigned* args){
+	//set timer registers to interrupt when current time + specified time is reached
+	volatile unsigned *mytimeout = (unsigned *)OSMR_0;
+	volatile unsigned *interruptenable = (unsigned *) OIER;
+	volatile unsigned *currenttime = (unsigned *)OSCR;
+
+	mytimeout = (args[0] * 3686.4) + currenttime; //3686 may have to be 3686.4 to be exact... :/
+	interruptenable = (unsigned *)0x1;
+	//set global variable to false and wait for interrupt
+	interrupt = 0;
+	while(!interrupt);
 }

@@ -18,6 +18,9 @@ extern void exit_user(unsigned, unsigned, unsigned);
 #include <bits/errno.h>
 #include <exports.h>
 
+void doread(unsigned*, unsigned*);
+void dowrite(unsigned*, unsigned*);
+
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
@@ -29,10 +32,6 @@ extern unsigned sp_k;		//store value of kernel stack pointer
 	args - a pointer to arguments associated with the swi.
 */
 void c_swi_handler(int swi_num, unsigned *args){
-	int fileno, c;
-	char* buf;
-	size_t count;
-	size_t pcount = 0; //processed char count
 	unsigned *ret = args;
 
 	switch(swi_num){
@@ -42,66 +41,11 @@ void c_swi_handler(int swi_num, unsigned *args){
 		break;
 	case READ_SWI:
 		/* read */
-		fileno = (int) *args++;
-		buf = (char*) *args++;
-		count = *args;
-		if(fileno != STDIN_FILENO){
-			*ret = -EBADF;
-			break;
-		}
-		if(!(buf >= (char*)SDRAM_BASE && (buf+count) <= (char*)SDRAM_LIMIT)){
-			*ret = -EFAULT;
-			break;
-		}
-		char* bufstart = buf;
-		while(pcount++ < count){
-			c = getc();
-			if(c == EOT){
-				*ret = pcount - 1;
-				break;
-			}
-			if(c == BACK_SPACE || c == DELETE){
-				if(buf > bufstart)
-					buf--;
-				if(pcount-- > 1)
-					pcount--; //don't count input character and the one it deleted
-				/* make terminal display accurate */
-				if(buf >= bufstart)
-					printf("\b \b");
-				continue;
-			}
-			if(c == NEW_LINE || c == RETURN){
-				*buf++ = '\n';
-				*buf = 0;
-				/* map \r to \n */
-				printf("\n");
-				*ret = pcount;
-				break;
-			}
-			/* echo input character */
-			printf("%c", c);
-			*buf++ = c;
-		}
+		doread(args, ret);
 		break;
 	case WRITE_SWI:
 		/* write */
-		fileno = (int) *args++;
-		buf = (char*) *args++;
-		count = *args;
-		if(fileno != STDOUT_FILENO){
-			*ret = -EBADF;
-			break;
-		}
-		if(!((buf >= (char*) SDRAM_BASE && (buf+count) <= (char*) SDRAM_LIMIT) ||
-		     (buf >= (char*) SFROM_BASE && (buf+count) <= (char*) SFROM_LIMIT))){
-			*ret = -EFAULT;
-			break;
-		}
-		while(*buf){
-			printf("%c",*buf++);
-			pcount++;
-		}
-		*ret = pcount;
+		dowrite(args, ret);
 		break;
 	case TIME_SWI:
 		/*do time*/
@@ -112,4 +56,75 @@ void c_swi_handler(int swi_num, unsigned *args){
 	default:
 		*args = -0xbadc0de;
 	}
+}
+
+void doread(unsigned* args, unsigned* ret){
+	int fileno, c;
+	char* buf;
+	size_t count;;
+	size_t pcount = 0; //processed char count
+	fileno = (int) *args++;
+	buf = (char*) *args++;
+	count = *args;
+	if(fileno != STDIN_FILENO){
+		*ret = -EBADF;
+		return;
+	}
+	if(!(buf >= (char*)SDRAM_BASE && (buf+count) <= (char*)SDRAM_LIMIT)){
+		*ret = -EFAULT;
+		return;
+	}
+	char* bufstart = buf;
+	while(pcount++ < count){
+		c = getc();
+		if(c == EOT){
+			*ret = pcount - 1;
+			break;
+		}
+		if(c == BACK_SPACE || c == DELETE){
+			if(buf > bufstart)
+				buf--;
+			if(pcount-- > 1)
+				pcount--; //don't count input character and the one it deleted
+			/* make terminal display accurate */
+			if(buf >= bufstart)
+				printf("\b \b");
+			continue;
+		}
+		if(c == NEW_LINE || c == RETURN){
+			*buf++ = '\n';
+			*buf = 0;
+			/* map \r to \n */
+			printf("\n");
+			*ret = pcount;
+			break;
+		}
+		/* echo input character */
+		printf("%c", c);
+		*buf++ = c;
+	}
+}
+
+void dowrite(unsigned* args, unsigned* ret){
+	int fileno;
+	char* buf;
+	size_t count;
+	size_t pcount = 0;
+	fileno = (int) *args++;
+	buf = (char*) *args++;
+	count = *args;
+	if(fileno != STDOUT_FILENO){
+		*ret = -EBADF;
+		return;
+	}
+	if(!((buf >= (char*) SDRAM_BASE && (buf+count) <= (char*) SDRAM_LIMIT) ||
+	     (buf >= (char*) SFROM_BASE && (buf+count) <= (char*) SFROM_LIMIT))){
+		*ret = -EFAULT;
+		return;
+	}
+	while(*buf){
+		printf("%c",*buf++);
+		pcount++;
+	}
+	*ret = pcount;
 }

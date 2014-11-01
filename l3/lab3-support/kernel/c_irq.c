@@ -44,87 +44,14 @@ unsigned instr2;	//second instruction we clobber
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
 
-/* c_swi_handler - custom swi handler called by assembly swi handler
+extern unsigned interrupt;
+
+/* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.
-	Parameters: 
-	swi_num - the number the swi was invoked with.
-	args - a pointer to arguments associated with the swi.
+	Parameters: None 
 */
-void c_swi_handler(int swi_num, unsigned *args){
-	int fileno, c;
-	char* buf;
-	size_t count;
-	size_t pcount = 0; //processed char count
-	unsigned *ret = args;
-	switch(swi_num){
-	case EXIT_SWI:
-		/* exit */
-		exit_user(lr_k, sp_k, *args);
-		break;
-	case READ_SWI:
-		/* read */
-		fileno = (int) *args++;
-		buf = (char*) *args++;
-		count = *args;
-		if(fileno != STDIN_FILENO){
-			*ret = -EBADF;
-			break;
-		}
-		if(!(buf >= (char*)SDRAM_BASE && (buf+count) <= (char*)SDRAM_LIMIT)){
-			*ret = -EFAULT;
-			break;
-		}
-		char* bufstart = buf;
-		while(pcount++ < count){
-			c = getc();
-			if(c == EOT){
-				*ret = pcount - 1;
-				break;
-			}
-			if(c == BACK_SPACE || c == DELETE){
-				if(buf > bufstart)
-					buf--;
-				if(pcount-- > 1)
-					pcount--; //don't count input character and the one it deleted
-				/* make terminal display accurate */
-				if(buf >= bufstart)
-					printf("\b \b");
-				continue;
-			}
-			if(c == NEW_LINE || c == RETURN){
-				*buf++ = '\n';
-				*buf = 0;
-				/* map \r to \n */
-				printf("\n");
-				*ret = pcount;
-				break;
-			}
-			/* echo input character */
-			printf("%c", c);
-			*buf++ = c;
-		}
-		break;
-	case WRITE_SWI:
-		/* write */
-		fileno = (int) *args++;
-		buf = (char*) *args++;
-		count = *args;
-		if(fileno != STDOUT_FILENO){
-			*ret = -EBADF;
-			break;
-		}
-		if(!((buf >= (char*) SDRAM_BASE && (buf+count) <= (char*) SDRAM_LIMIT) ||
-		     (buf >= (char*) SFROM_BASE && (buf+count) <= (char*) SFROM_LIMIT))){
-			*ret = -EFAULT;
-			break;
-		}
-		while(*buf){
-			printf("%c",*buf++);
-			pcount++;
-		}
-		*ret = pcount;
-		break;
-	default:
-		*args = -0xbadc0de;
-	}
+void c_irq_handler(){
+	interrupt = 1;
+	//set global boolean true to allow sleep function to continue
+
 }

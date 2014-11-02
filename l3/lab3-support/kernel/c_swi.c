@@ -39,11 +39,13 @@ extern void exit_user(unsigned, unsigned, unsigned);
 
 void doread(unsigned*, unsigned*);
 void dowrite(unsigned*, unsigned*);
-
+void dosleep(unsigned*);
+void dotime(unsigned*, unsigned*);
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
-extern unsigned interrupt;
+unsigned interrupt;
+
 /* c_swi_handler - custom swi handler called by assembly swi handler
    after state has been saved/restored appropriately.
 	Parameters: 
@@ -152,7 +154,7 @@ void dowrite(unsigned* args, unsigned* ret){
 
 void dotime(unsigned* args, unsigned* ret){
 	volatile unsigned *currenttime = (unsigned *)OSCR;
-	*ret = currenttime/3686.4;
+	*ret = *currenttime / 3686; //should be 3686.4
 }
 
 void dosleep(unsigned* args){
@@ -161,7 +163,7 @@ void dosleep(unsigned* args){
 	volatile unsigned *interruptenable = (unsigned *) OIER;
 	volatile unsigned *currenttime = (unsigned *)OSCR;
 
-	mytimeout = (args[0] * 3686.4) + currenttime; //3686 may have to be 3686.4 to be exact... :/
+	mytimeout = (args[0] * 3686) + currenttime; //3686 may have to be 3686.4 to be exact... :/
 	interruptenable = (unsigned *)0x1;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;

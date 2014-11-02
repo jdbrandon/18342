@@ -61,11 +61,13 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 */
 extern void exit_user(unsigned, unsigned, unsigned);
 
-inline void install_handler(int, interrupt_handler_t, unsigned*);
+inline void install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 
 /* global variables */
-unsigned instr1;	//first instruction we clobber
-unsigned instr2;	//second instruction we clobber
+unsigned swi_instr1;	//first instruction we clobber
+unsigned swi_instr2;	//second instruction we clobber
+unsigned irq_instr1;
+unsigned irq_instr2;
 unsigned lr_k; 		//store value of kernel link register  
 unsigned sp_k;		//store value of kernel stack pointer
 uint32_t global_data;
@@ -76,8 +78,13 @@ uint32_t global_data;
 */
 void restore_old_swi(){
 	unsigned* restore = (unsigned*) SWI_ADDR;
-	*restore++ = instr1;
-	*restore = instr2;
+	*restore++ = swi_instr1;
+	*restore = swi_instr2;
+	/*
+	restore = (unsigned*) IRQ_ADDR;
+	*restore++ = irq_instr1;
+	*restore = irq_instr2;
+	*/
 }
 
 /* main - installs custom swi handler, executes a user program, restores
@@ -87,10 +94,10 @@ int kmain(int argc, char** argv, uint32_t table) {
 	int ret;
 	app_startup();
 	global_data = table;
-	puts("1\n");
-	install_handler(SWI_ADDR, swi_handler, (unsigned*)0);
-//	install_handler(IRQ_ADDR, irq_handler, (unsigned*)0);
-	puts("2\n");
+//	puts("1\n");
+	install_handler(SWI_ADDR, swi_handler, &swi_instr1, &swi_instr2);
+//	install_handler(IRQ_ADDR, irq_handler, &irq_instr1, &irq_instr2);
+//	puts("2\n");
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	restore_old_swi();
 	return ret;
@@ -103,14 +110,14 @@ int kmain(int argc, char** argv, uint32_t table) {
 	vec - The address of memory where the injected instructions 
 		should be placed.
 	handler - the address of the custom swi handler.
-	arg - pointer to arguments for the hander (currently unused)
+	store1 and store2 - used to save the values overwritten
 */
-inline void install_handler(int vec, interrupt_handler_t handler, unsigned *arg){
+inline void install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){
 	unsigned *addr;
 	addr = (unsigned*) vec;
-	instr1 = *addr;
+	*store1 = *addr;
 	*addr = 0xe51ff004; // ldr pc, [pc, #-4]
 	addr++;
-	instr2 = *addr;
+	*store2 = *addr;
 	*addr = (unsigned) handler;
 }

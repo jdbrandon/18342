@@ -166,8 +166,8 @@ void dosleep(unsigned* args){
 	mmio_t interruptenable = (unsigned *) OIER;
 	mmio_t currenttime = (unsigned *)OSCR;
 
-	mytimeout = ((int)(args[0] * TIME_CONVERT_CONST)) + currenttime; 
-	interruptenable = (unsigned *)0x1;
+	*mytimeout = ((int)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
+	*interruptenable = 0x1;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;
 	while(!interrupt);

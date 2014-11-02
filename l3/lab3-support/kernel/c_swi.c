@@ -54,7 +54,7 @@ unsigned interrupt;
 */
 void c_swi_handler(int swi_num, unsigned *args){
 	unsigned *ret = args;
-
+	puts("3\n");
 	switch(swi_num){
 	case EXIT_SWI:
 		/* exit */

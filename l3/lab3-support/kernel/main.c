@@ -35,6 +35,11 @@
 */
 extern void swi_handler(void*);
 
+/* irq_handler - Assembly function that performs preliminary tasks for irq 
+   handling before calling a c irq handler.
+*/
+extern void irq_handler(void*);
+
 /* user_mode - Assembly function that switches processor state from service
    mode to user mode, then begins execution of a user program. 
 	Parameters:
@@ -82,7 +87,10 @@ int kmain(int argc, char** argv, uint32_t table) {
 	int ret;
 	app_startup();
 	global_data = table;
+	puts("1\n");
 	install_handler(SWI_ADDR, swi_handler, (unsigned*)0);
+//	install_handler(IRQ_ADDR, irq_handler, (unsigned*)0);
+	puts("2\n");
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	restore_old_swi();
 	return ret;

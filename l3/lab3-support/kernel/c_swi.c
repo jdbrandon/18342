@@ -9,6 +9,7 @@
 #define DELETE 127
 #define NEW_LINE 10
 #define RETURN 13
+#define TIME_CONVERT_CONST 3686.4
 
 /* Memory mapped io constants */
 #define TIMER_BASE_ADDR 0x40a00000
@@ -28,6 +29,8 @@
 #define ICFP (INTERRUPT_BASE + 0xc)  /* Interrupt controller FIQ pending register */
 #define ICPR (INTERRUPT_BASE + 0x10) /* Interrupt controller pending register */
 #define ICCR (INTERRUPT_BASE + 0x14) /* Interrupt controller control register */
+
+typedef volatile unsigned* mmio_t;
 
 extern void exit_user(unsigned, unsigned, unsigned);
 
@@ -153,17 +156,17 @@ void dowrite(unsigned* args, unsigned* ret){
 }
 
 void dotime(unsigned* args, unsigned* ret){
-	volatile unsigned *currenttime = (unsigned *)OSCR;
-	*ret = *currenttime / 3686; //should be 3686.4
+	mmio_t currenttime = (unsigned *)OSCR;
+	*ret = *currenttime / TIME_CONVERT_CONST;
 }
 
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
-	volatile unsigned *mytimeout = (unsigned *)OSMR_0;
-	volatile unsigned *interruptenable = (unsigned *) OIER;
-	volatile unsigned *currenttime = (unsigned *)OSCR;
+	mmio_t mytimeout = (unsigned *)OSMR_0;
+	mmio_t interruptenable = (unsigned *) OIER;
+	mmio_t currenttime = (unsigned *)OSCR;
 
-	mytimeout = (args[0] * 3686) + currenttime; //3686 may have to be 3686.4 to be exact... :/
+	mytimeout = ((int)(args[0] * TIME_CONVERT_CONST)) + currenttime; 
 	interruptenable = (unsigned *)0x1;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;

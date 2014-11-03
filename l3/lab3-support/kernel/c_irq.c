@@ -53,16 +53,23 @@ extern unsigned interrupt;
 */
 void c_irq_handler(){
 	mmio_t ossr;
-	puts("caught interrupt yo\n");
+//	mmio_t icip = (unsigned *)ICIP;
+//	*icip = (unsigned)0;
+//	mmio_t icpr = (unsigned *)ICPR;
+//	*icpr = (unsigned)0;
+	mmio_t icmr = (unsigned *)ICMR;
+	*icmr = (unsigned)0;
+//	puts("caught interrupt yo\n");
 	interrupt = 1;
 	//set global boolean true to allow sleep function to continue
-	ossr = (mmio_t) OSTMR_OSSR_ADDR;
-	if(*ossr & OSTMR_OSSR_M0)
-		*ossr = 0;
-	if(*ossr & OSTMR_OSSR_M1)
-		*ossr = 0;
-	if(*ossr & OSTMR_OSSR_M2)
-		*ossr = 0;
-	if(*ossr & OSTMR_OSSR_M3)
-		*ossr = 0;
+	ossr = (mmio_t) OSSR;
+	*ossr = (unsigned)0;
+//	if(*ossr & OSTMR_OSSR_M0)
+//		*ossr = 0;
+//	if(*ossr & OSTMR_OSSR_M1)
+//		*ossr = 0;
+//	if(*ossr & OSTMR_OSSR_M2)
+//		*ossr = 0;
+//	if(*ossr & OSTMR_OSSR_M3)
+//		*ossr = 0;
 }

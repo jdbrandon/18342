@@ -15,4 +15,4 @@
 #@FUNC(sleep)
 sleep:
 	swi SLEEP_SWI
-	movs pc, lr
+	mov pc, lr

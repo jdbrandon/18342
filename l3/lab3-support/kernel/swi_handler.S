@@ -14,6 +14,8 @@ swi_handler:
 	sub	sp, sp, #4		@save user registers
 	stmfd 	sp!, {r0-r12, lr}
 	ldr	r8, [sp, #60]		@restore value of r8 
+	mrs	r2, spsr
+	str	r2, [sp, #14*4]
 	mov	r1, sp			@r1 points to arguments on stack
 	ldr	r0, [lr, #-4]		@extract swi num
 	mov	r4, #0xff
@@ -22,6 +24,9 @@ swi_handler:
 	bic	r4, r4, #0x80
 	msr	cpsr, r4
 	bl	c_swi_handler		@call c_swi_handler
-	ldmfd	sp!, {r0-r12, lr}	@restore saved values
+	ldr	r2, [sp, #14*4]
+	msr	spsr, r2
+	add	sp, sp, #4
+	ldmfd	sp!, {r1-r12, lr}	@restore saved values
 	add	sp, sp, #4
 	movs	pc, lr

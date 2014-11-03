@@ -13,9 +13,15 @@
 
 irq_handler:
 	ldr	sp, =0xa2500000
+	sub	sp, sp, #4
 	stmfd 	sp!, {r0-r12, lr}
+	mrs	r2, spsr
+	str	r2, [sp, #14*4]
 	@ldr	r8, [sp, #60]		@restore value of r8 
 	mov	r1, sp			@r1 points to arguments on stack (not sure if this is needed yet...)
 	bl	c_irq_handler		@call c_irq_handler
+	ldr	r2, [sp, #14*4]
+	msr	spsr, r2
 	ldmfd	sp!, {r0-r12, lr}	@restore saved values
+	add	sp, sp, #4
 	movs	pc, lr

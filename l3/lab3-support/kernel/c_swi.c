@@ -79,6 +79,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 	default:
 		*args = -0xbadc0de;
 	}
+//	puts("goin back to userland...\n");
 }
 
 void doread(unsigned* args, unsigned* ret){
@@ -164,16 +165,13 @@ void dosleep(unsigned* args){
 	mmio_t currenttime = (unsigned *)OSCR;
 	mmio_t icmr = (unsigned *)ICMR;
 	mmio_t iclr = (unsigned *)ICLR;
-	mmio_t icpr = (unsigned *)ICPR;
 	*mytimeout = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
 	*interruptenable = 0x1;
 	*icmr = 0x04000000;
 	*iclr = 0x0;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;
-	printf("current: %d, timeout at: %d, icpr: %x, iclr: %x, icmr: %x\n", *currenttime, *mytimeout, *icpr, *iclr, *icmr);
-	puts("waiting for interrupt\n");
-	while(!interrupt){
-	}
-	puts("interrupt happened and stuff!\n");
+//	puts("waiting for interrupt\n");
+	while(!interrupt);
+//	puts("interrupt happened and stuff!\n");
 }

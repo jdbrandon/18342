@@ -10,8 +10,9 @@
 #include <bits/swi.h>
 
 	.file "sleep.S"
-
-@FUNC(sleep)
+	.text
+	.global sleep
+#@FUNC(sleep)
 sleep:
 	swi SLEEP_SWI
 	movs pc, lr

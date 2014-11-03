@@ -61,7 +61,7 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 */
 extern void exit_user(unsigned, unsigned, unsigned);
 
-inline void install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
+unsigned install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 
 /* global variables */
 unsigned swi_instr1;	//first instruction we clobber
@@ -95,11 +95,17 @@ int kmain(int argc, char** argv, uint32_t table) {
 	app_startup();
 	global_data = table;
 //	puts("1\n");
-	install_handler(SWI_ADDR, swi_handler, &swi_instr1, &swi_instr2);
-//	install_handler(IRQ_ADDR, irq_handler, &irq_instr1, &irq_instr2);
+	unsigned swiaddr = install_handler(0x8, swi_handler, &swi_instr1, &swi_instr2);
+	unsigned irqaddr = install_handler(0x18, irq_handler, &irq_instr1, &irq_instr2);
 //	puts("2\n");
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
-	restore_old_swi();
+	unsigned* restore = (unsigned*) swiaddr;
+	*restore++ = swi_instr1;
+	*restore = swi_instr2;
+	restore = (unsigned*) irqaddr;
+	*restore++ = irq_instr1;
+	*restore = irq_instr2;
+	//restore_old_swi();
 	return ret;
 }
 
@@ -112,12 +118,20 @@ int kmain(int argc, char** argv, uint32_t table) {
 	handler - the address of the custom swi handler.
 	store1 and store2 - used to save the values overwritten
 */
-inline void install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){
-	unsigned *addr;
-	addr = (unsigned*) vec;
+unsigned install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){
+//find UBOOT Handler
+	unsigned *vector = (unsigned *) vec; //swi=0x08, irq=0x18
+	if((*vector & 0xfffff000) != 0xe59ff000){ // if instruction is not ldr return with error
+		return 0x0badc0de; //it doesnt like me returning in a
+	}
+	unsigned *offsetaddr = (unsigned *)((*vector & 0x00000fff) + 0x8 + vec); //take offset in instruction and add pc offset (0x8) and initial vector to get absolute address
+	unsigned *addr = (unsigned *) *offsetaddr; //take offset in instruction and add pc of 0x10 (0x8 + 8)
+	//unsigned *addr;
+	//addr = (unsigned*) vec;
 	*store1 = *addr;
 	*addr = 0xe51ff004; // ldr pc, [pc, #-4]
-	addr++;
-	*store2 = *addr;
-	*addr = (unsigned) handler;
+	//addr++;
+	*store2 = *(addr+1);
+	*(addr+1) = (unsigned) handler;
+	return (unsigned)addr;
 }

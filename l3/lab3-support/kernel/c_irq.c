@@ -32,7 +32,7 @@
 
 extern void exit_user(unsigned, unsigned, unsigned);
 
-#include <bits/types.h>
+#include <types.h>
 #include <bits/swi.h>
 #include <bits/fileno.h>
 #include <bits/errno.h>
@@ -51,6 +51,7 @@ extern unsigned interrupt;
 	Parameters: None 
 */
 void c_irq_handler(){
+	puts("caught interrupt yo\n");
 	interrupt = 1;
 	//set global boolean true to allow sleep function to continue
 

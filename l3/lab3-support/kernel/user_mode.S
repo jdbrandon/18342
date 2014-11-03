@@ -19,10 +19,10 @@ user_mode:
 	str 	r8, [sp, #-4]!
 	str	lr, [r2]
 	str	sp, [r3]
-	mrs	r7, cpsr
-	bic	r7, r7, #0xff
-	orr	r7, r7, #0x50	@specifies user mode with fiq's masked
-	msr	cpsr, r7
+	mrs	r2, cpsr
+	bic	r2, r2, #0xff
+	orr	r2, r2, #0x50	@specifies user mode with fiq's masked
+	msr	cpsr, r2
 	mov	sp, #0xa3
 	mov	sp, sp, ROR #8	@ldr	sp, =0xa3000000
 	push	{r1}

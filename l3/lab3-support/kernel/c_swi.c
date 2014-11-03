@@ -30,8 +30,6 @@
 #define ICPR (INTERRUPT_BASE + 0x10) /* Interrupt controller pending register */
 #define ICCR (INTERRUPT_BASE + 0x14) /* Interrupt controller control register */
 
-typedef volatile unsigned* mmio_t;
-
 extern void exit_user(unsigned, unsigned, unsigned);
 
 #include <types.h>
@@ -39,6 +37,7 @@ extern void exit_user(unsigned, unsigned, unsigned);
 #include <bits/fileno.h>
 #include <bits/errno.h>
 #include <exports.h>
+#include <arm/interrupt.h>
 
 void doread(unsigned*, unsigned*);
 void dowrite(unsigned*, unsigned*);
@@ -158,15 +157,26 @@ void dotime(unsigned* args, unsigned* ret){
 	mmio_t currenttime = (unsigned *)OSCR;
 	*ret = *currenttime / TIME_CONVERT_CONST;
 }
-
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
-	mmio_t mytimeout = (unsigned *)OSMR_0;
-	mmio_t interruptenable = (unsigned *) OIER;
-	mmio_t currenttime = (unsigned *)OSCR;
+	mmio_t iclr, icmr, icip;
+//	unsigned test();
+//	unsigned val = test();
+//	printf("sleep-cpsr_svc:%x\n",val);
+	mmio_t mytimeout = (mmio_t)OSMR_0;
+	mmio_t interrupt_enable = (mmio_t) OIER;
+	mmio_t currenttime = (mmio_t)OSCR;
+
+
+	iclr = (mmio_t) INT_ICLR_ADDR;
+	icmr = (mmio_t) INT_ICMR_ADDR;
+	icip = (mmio_t) INT_ICIP_ADDR;
+	*iclr &= 0xfbffffff;
+	*icmr |= 0x04000000;
+	printf("iclr:%x, icmr:%x, icip:%x\n",*iclr,*icmr,*icip);
 
 	*mytimeout = ((int)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
-	*interruptenable = 0x1;
+	*interrupt_enable |= 0x1;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;
 	puts("waiting for interrupt\n");

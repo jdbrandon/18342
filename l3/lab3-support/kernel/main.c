@@ -67,6 +67,8 @@ extern void exit_user(unsigned, unsigned, unsigned);
 
 unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 
+inline void irq_setup();
+
 /* global variables */
 unsigned swi_instr1;	//first instruction we clobber
 unsigned swi_instr2;	//second instruction we clobber
@@ -98,6 +100,7 @@ int kmain(int argc, char** argv, uint32_t table) {
 	unsigned* swiaddr, * irqaddr;
 	app_startup();
 	global_data = table;
+
 	swiaddr = install_handler(SWI_VEC, swi_handler, &swi_instr1, &swi_instr2);
 	irqaddr = install_handler(IRQ_VEC, irq_handler, &irq_instr1, &irq_instr2);
 	if(swiaddr == ERROR_CASE)
@@ -105,6 +108,7 @@ int kmain(int argc, char** argv, uint32_t table) {
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
 //	puts("1\n");
+	irq_setup();
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	restore_old_handlers(swiaddr, irqaddr);
 	return ret;
@@ -133,4 +137,12 @@ unsigned *install_handler(int vec, interrupt_handler_t handler, unsigned* store1
 	*store2 = *(addr+1);
 	*(addr+1) = (unsigned) handler;
 	return addr;
+}
+
+inline void irq_setup(){
+	mmio_t icmr = (mmio_t) INT_ICMR_ADDR;
+	*icmr &= 0xc3ffffff;
+	*icmr |= (0x1 << 26);
+	*((mmio_t) INT_ICLR_ADDR) &= 0xc3ffffff; 
+	*((mmio_t) INT_ICIP_ADDR) &= 0xc3ffffff;
 }

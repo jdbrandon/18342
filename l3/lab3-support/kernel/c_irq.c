@@ -63,6 +63,7 @@ void c_irq_handler(){
 	interrupt = 1;
 	//set global boolean true to allow sleep function to continue
 	ossr = (mmio_t) OSSR;
+	*ossr = *ossr; //I dont know why this works
 	*ossr = (unsigned)0;
 //	if(*ossr & OSTMR_OSSR_M0)
 //		*ossr = 0;

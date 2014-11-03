@@ -12,7 +12,7 @@
 	.global irq_handler
 
 irq_handler:
-	ldr	sp, =0xa3000040
+	ldr	sp, =0xa2500000
 	stmfd 	sp!, {r0-r12, lr}
 	@ldr	r8, [sp, #60]		@restore value of r8 
 	mov	r1, sp			@r1 points to arguments on stack (not sure if this is needed yet...)

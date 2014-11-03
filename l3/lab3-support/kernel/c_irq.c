@@ -45,27 +45,20 @@ unsigned instr2;	//second instruction we clobber
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
 
-extern unsigned interrupt;
+extern volatile unsigned interrupt;
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.
 	Parameters: None 
 */
 void c_irq_handler(){
-	mmio_t ossr;
-//	mmio_t icip = (unsigned *)ICIP;
-//	*icip = (unsigned)0;
-//	mmio_t icpr = (unsigned *)ICPR;
-//	*icpr = (unsigned)0;
+	mmio_t ossr = (unsigned *)OSSR;
 	mmio_t icmr = (unsigned *)ICMR;
-	*icmr = (unsigned)0;
-//	puts("caught interrupt yo\n");
+	*icmr = 0x0;
+	*ossr = 0x0;
 	interrupt = 1;
+	//*ossr = *ossr;
 	//set global boolean true to allow sleep function to continue
-	ossr = (mmio_t) OSSR;
-	*ossr = *ossr; //I dont know why this works
-	*ossr = (unsigned)0;
-//	if(*ossr & OSTMR_OSSR_M0)
 //		*ossr = 0;
 //	if(*ossr & OSTMR_OSSR_M1)
 //		*ossr = 0;

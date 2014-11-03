@@ -160,13 +160,13 @@ void dotime(unsigned* args, unsigned* ret){
 
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
-	mmio_t mytimeout = (unsigned *)OSMR_0;
-	mmio_t interruptenable = (unsigned *) OIER;
-	mmio_t currenttime = (unsigned *)OSCR;
+	mmio_t osmr0 = (unsigned *)OSMR_0;
+	mmio_t oier = (unsigned *)OIER;
+	mmio_t oscr = (unsigned *)OSCR;
 	mmio_t icmr = (unsigned *)ICMR;
 	mmio_t iclr = (unsigned *)ICLR;
-	*mytimeout = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
-	*interruptenable = 0x1;
+	*osmr0 = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *oscr; 
+	*oier = 0x1;
 	*icmr = 0x04000000;
 	*iclr = 0x0;
 	//set global variable to false and wait for interrupt

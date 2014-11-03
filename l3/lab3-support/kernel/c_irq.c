@@ -37,6 +37,7 @@ extern void exit_user(unsigned, unsigned, unsigned);
 #include <bits/fileno.h>
 #include <bits/errno.h>
 #include <exports.h>
+#include <arm/timer.h>
 
 /* global variables */
 unsigned instr1;	//first instruction we clobber
@@ -51,8 +52,17 @@ extern unsigned interrupt;
 	Parameters: None 
 */
 void c_irq_handler(){
+	mmio_t ossr;
 	puts("caught interrupt yo\n");
 	interrupt = 1;
 	//set global boolean true to allow sleep function to continue
-
+	ossr = (mmio_t) OSTMR_OSSR_ADDR;
+	if(*ossr & OSTMR_OSSR_M0)
+		*ossr = 0;
+	if(*ossr & OSTMR_OSSR_M1)
+		*ossr = 0;
+	if(*ossr & OSTMR_OSSR_M2)
+		*ossr = 0;
+	if(*ossr & OSTMR_OSSR_M3)
+		*ossr = 0;
 }

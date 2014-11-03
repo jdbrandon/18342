@@ -30,8 +30,6 @@
 #define ICPR (INTERRUPT_BASE + 0x10) /* Interrupt controller pending register */
 #define ICCR (INTERRUPT_BASE + 0x14) /* Interrupt controller control register */
 
-typedef volatile unsigned* mmio_t;
-
 extern void exit_user(unsigned, unsigned, unsigned);
 
 #include <types.h>

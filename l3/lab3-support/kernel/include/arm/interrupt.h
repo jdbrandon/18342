@@ -15,13 +15,13 @@
 #ifndef _INTERRUPT_H_
 #define _INTERRUPT_H_
 
-#define INT_ICIP_ADDR   0x00D00000  /* Interrupt Controller IRQ Pending Register */
-#define INT_ICMR_ADDR   0x00D00004  /* Interrupt Controller Mask Register */
-#define INT_ICLR_ADDR   0x00D00008  /* Interrupt Controller Level Register */
-#define INT_ICFP_ADDR   0x00D0000C  /* Interrupt Controller FIQ Pending Register */
-#define INT_ICPR_ADDR   0x00D00010  /* Interrupt Controller Pending Register */
+#define INT_ICIP_ADDR   0x40D00000  /* Interrupt Controller IRQ Pending Register */
+#define INT_ICMR_ADDR   0x40D00004  /* Interrupt Controller Mask Register */
+#define INT_ICLR_ADDR   0x40D00008  /* Interrupt Controller Level Register */
+#define INT_ICFP_ADDR   0x40D0000C  /* Interrupt Controller FIQ Pending Register */
+#define INT_ICPR_ADDR   0x40D00010  /* Interrupt Controller Pending Register */
 
-#define INT_ICCR_ADDR   0x00D00014  /* Interrupt Controller Control Register */
+#define INT_ICCR_ADDR   0x40D00014  /* Interrupt Controller Control Register */
 #define INT_ICCR_DIM    0x00000001  /* Activate Idle Mask and ICMR */
 
 #define INT_HUART        7    /* HUART Service Request Interrupt */

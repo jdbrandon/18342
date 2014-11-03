@@ -7,6 +7,8 @@
 @		an exit swi is issued.
 @ Author: Jeff Brandon <jdbrando@andrew.cmu.edu>
 @ Date: Sun Oct 12 19:05:18 UTC 2014
+
+#include <bits/swi.h>
 	
 	.file "user_mode.S"
 	.text
@@ -19,7 +21,7 @@ user_mode:
 	str	sp, [r3]
 	mrs	r7, cpsr
 	bic	r7, r7, #0xff
-	orr	r7, r7, #0xd0	@specifies user mode with fiq's and irq's masked
+	orr	r7, r7, #0x50	@specifies user mode with fiq's masked
 	msr	cpsr, r7
 	mov	sp, #0xa3
 	mov	sp, sp, ROR #8	@ldr	sp, =0xa3000000
@@ -27,4 +29,4 @@ user_mode:
 	push	{r0}
 	mov	lr, pc
 	ldr	pc, =0xa0000000
-	swi	0x900001 @exit swi
+	swi	EXIT_SWI

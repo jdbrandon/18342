@@ -1,12 +1,15 @@
 /*
- * kernel.c: Kernel main (entry) function
+ * main.c: Kernel main (entry) function
  *
  * Author: Jeff Brandon <jdbrando@andrew.cmu.edu> 
+ *	   Keane Lucas  <keansemailaddress@andrew.cmu.edu>
  * Date: Sun Oct 12 19:14:20 UTC 2014
  */
 
 /* Define constants in this region */
 #define SWI_ADDR 0x5c0009c0
+#define SWI_VEC 0x08
+#define IRQ_VEC 0x18
 #define SDRAM_BASE 0xa0000000
 #define SDRAM_LIMIT 0xa3ffffff
 #define SFROM_BASE 0x0
@@ -16,6 +19,7 @@
 #define DELETE 127
 #define NEW_LINE 10
 #define RETURN 13
+#define ERROR_CASE ((unsigned*) 0xbadc0de)
 
 /* include necessary header files */
 #include <types.h>
@@ -61,7 +65,7 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 */
 extern void exit_user(unsigned, unsigned, unsigned);
 
-unsigned install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
+unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 
 /* global variables */
 unsigned swi_instr1;	//first instruction we clobber
@@ -72,19 +76,18 @@ unsigned lr_k; 		//store value of kernel link register
 unsigned sp_k;		//store value of kernel stack pointer
 uint32_t global_data;
 
-/* restore_old_swi - Restores the instructions at the 
-   uboot swi handler that are clobbered when this kernel
-   installs its own swi handler.
+/* restore_old_handlers - Restores the instructions at the 
+   uboot swi and irq handlers that are clobbered when this kernel
+   installs its own handlers.
 */
-void restore_old_swi(){
-	unsigned* restore = (unsigned*) SWI_ADDR;
+inline void restore_old_handlers(unsigned* swiaddr, unsigned* irqaddr){
+	unsigned* restore = swiaddr;
 	*restore++ = swi_instr1;
 	*restore = swi_instr2;
-	/*
-	restore = (unsigned*) IRQ_ADDR;
+	
+	restore = (unsigned*) irqaddr;
 	*restore++ = irq_instr1;
 	*restore = irq_instr2;
-	*/
 }
 
 /* main - installs custom swi handler, executes a user program, restores
@@ -92,20 +95,18 @@ void restore_old_swi(){
 */
 int kmain(int argc, char** argv, uint32_t table) {
 	int ret;
+	unsigned* swiaddr, * irqaddr;
 	app_startup();
 	global_data = table;
+	swiaddr = install_handler(SWI_VEC, swi_handler, &swi_instr1, &swi_instr2);
+	irqaddr = install_handler(IRQ_VEC, irq_handler, &irq_instr1, &irq_instr2);
+	if(swiaddr == ERROR_CASE)
+		puts("SWI_VEC has bad value!\n");
+	if(irqaddr == ERROR_CASE)
+		puts("IRQ_VEC has bad value!\n");
 //	puts("1\n");
-	unsigned swiaddr = install_handler(0x8, swi_handler, &swi_instr1, &swi_instr2);
-	unsigned irqaddr = install_handler(0x18, irq_handler, &irq_instr1, &irq_instr2);
-//	puts("2\n");
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
-	unsigned* restore = (unsigned*) swiaddr;
-	*restore++ = swi_instr1;
-	*restore = swi_instr2;
-	restore = (unsigned*) irqaddr;
-	*restore++ = irq_instr1;
-	*restore = irq_instr2;
-	//restore_old_swi();
+	restore_old_handlers(swiaddr, irqaddr);
 	return ret;
 }
 
@@ -118,20 +119,18 @@ int kmain(int argc, char** argv, uint32_t table) {
 	handler - the address of the custom swi handler.
 	store1 and store2 - used to save the values overwritten
 */
-unsigned install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){
+unsigned *install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){
 //find UBOOT Handler
-	unsigned *vector = (unsigned *) vec; //swi=0x08, irq=0x18
-	if((*vector & 0xfffff000) != 0xe59ff000){ // if instruction is not ldr return with error
-		return 0x0badc0de; //it doesnt like me returning in a
-	}
-	unsigned *offsetaddr = (unsigned *)((*vector & 0x00000fff) + 0x8 + vec); //take offset in instruction and add pc offset (0x8) and initial vector to get absolute address
-	unsigned *addr = (unsigned *) *offsetaddr; //take offset in instruction and add pc of 0x10 (0x8 + 8)
-	//unsigned *addr;
-	//addr = (unsigned*) vec;
+	unsigned* vector, * addr;
+	vector = (unsigned *) vec; 
+	if((*vector & 0xfffff000) != 0xe59ff000) // if instruction is not ldr return with error
+		return ERROR_CASE; //it doesnt like me returning in a
+	
+	addr = (unsigned *)((*vector & 0x00000fff) + 0x8 + vec); //take offset in instruction and add pc offset (0x8) and initial vector to get absolute address
+	addr = (unsigned *) *addr; //take offset in instruction and add pc of 0x10 (0x8 + 8)
 	*store1 = *addr;
 	*addr = 0xe51ff004; // ldr pc, [pc, #-4]
-	//addr++;
 	*store2 = *(addr+1);
 	*(addr+1) = (unsigned) handler;
-	return (unsigned)addr;
+	return addr;
 }

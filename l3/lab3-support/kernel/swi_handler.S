@@ -18,6 +18,9 @@ swi_handler:
 	ldr	r0, [lr, #-4]		@extract swi num
 	mov	r4, #0xff
 	bic 	r0, r0, r4, ror #8
+	mrs 	r4, cpsr
+	bic	r4, r4, #0x80
+	msr	cpsr, r4
 	bl	c_swi_handler		@call c_swi_handler
 	ldmfd	sp!, {r0-r12, lr}	@restore saved values
 	add	sp, sp, #4

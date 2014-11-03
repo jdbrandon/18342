@@ -15,7 +15,7 @@ irq_handler:
 	sub	sp, sp, #4		@save user registers
 	stmfd 	sp!, {r0-r12, lr}
 	ldr	r8, [sp, #60]		@restore value of r8 
-@	mov	r1, sp			@r1 points to arguments on stack (not sure if this is needed yet...)
+	mov	r1, sp			@r1 points to arguments on stack (not sure if this is needed yet...)
 	bl	c_irq_handler		@call c_irq_handler
 	ldmfd	sp!, {r0-r12, lr}	@restore saved values
 	add	sp, sp, #4

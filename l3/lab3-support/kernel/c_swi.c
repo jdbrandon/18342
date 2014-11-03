@@ -47,7 +47,7 @@ void dotime(unsigned*, unsigned*);
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
-unsigned interrupt;
+volatile unsigned interrupt;
 
 /* c_swi_handler - custom swi handler called by assembly swi handler
    after state has been saved/restored appropriately.
@@ -164,12 +164,18 @@ void dosleep(unsigned* args){
 	mmio_t mytimeout = (unsigned *)OSMR_0;
 	mmio_t interruptenable = (unsigned *) OIER;
 	mmio_t currenttime = (unsigned *)OSCR;
-
-	*mytimeout = ((int)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
+	mmio_t icmr = (unsigned *)ICMR;
+	mmio_t iclr = (unsigned *)ICLR;
+	mmio_t icpr = (unsigned *)ICPR;
+	*mytimeout = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *currenttime; 
 	*interruptenable = 0x1;
+	*icmr = 0x04000000;
+	*iclr = 0x0;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;
+	printf("current: %d, timeout at: %d, icpr: %d, iclr: %d, icmr: %d\n", *currenttime, *mytimeout, *icpr, *iclr, *icmr);
 	puts("waiting for interrupt\n");
-	while(!interrupt);
+	while(!interrupt){
+	}
 	puts("interrupt happened and stuff!\n");
 }

@@ -52,18 +52,15 @@ extern volatile unsigned interrupt;
 	Parameters: None 
 */
 void c_irq_handler(){
-	mmio_t ossr = (unsigned *)OSSR;
-	mmio_t icmr = (unsigned *)ICMR;
-	*icmr = 0x0;
-	*ossr = 0x0;
-	interrupt = 1;
-	//*ossr = *ossr;
+	mmio_t ossr = (mmio_t)OSSR;
 	//set global boolean true to allow sleep function to continue
-//		*ossr = 0;
-//	if(*ossr & OSTMR_OSSR_M1)
-//		*ossr = 0;
-//	if(*ossr & OSTMR_OSSR_M2)
-//		*ossr = 0;
-//	if(*ossr & OSTMR_OSSR_M3)
-//		*ossr = 0;
+	interrupt = 1;
+	if(*ossr * OSTMR_OSSR_M0)
+		*ossr |= OSTMR_OSSR_M0;
+	if(*ossr & OSTMR_OSSR_M1)
+		*ossr |= OSTMR_OSSR_M1;
+	if(*ossr & OSTMR_OSSR_M2)
+		*ossr |= OSTMR_OSSR_M2;
+	if(*ossr & OSTMR_OSSR_M3)
+		*ossr |= OSTMR_OSSR_M3;
 }

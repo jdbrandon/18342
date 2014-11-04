@@ -127,9 +127,9 @@ void dowrite(unsigned* args, unsigned* ret){
 
 void dotime(unsigned* args, unsigned* ret){
 	mmio_t oscr = (mmio_t)OSCR;
-	uint64_t currenttime = ((uint64_t)*oscr - (uint64_t)start_time + (uint64_t)((unsigned)-1))%(uint64_t)((unsigned)-1);
-	currenttime += ((uint64_t)rollovercount * (((unsigned)-1) + 1));
-	*ret = currenttime / TIME_CONVERT_CONST;
+	uint64_t currenttime = (uint64_t)(unsigned)(((uint64_t)0xffffffff + (uint64_t)(1)) + (uint64_t)*oscr - (uint64_t)start_time);
+	currenttime += ((uint64_t)rollovercount)<<32;
+	*ret = (unsigned)(currenttime / TIME_CONVERT_CONST);
 }
 
 void dosleep(unsigned* args){

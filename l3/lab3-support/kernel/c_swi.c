@@ -15,7 +15,9 @@ extern void exit_user(unsigned, unsigned, unsigned);
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
-volatile unsigned interrupt;
+extern volatile unsigned interrupt;
+extern volatile unsigned rollovercount;
+extern volatile unsigned start_time;
 
 /* c_swi_handler - custom swi handler called by assembly swi handler
    after state has been saved/restored appropriately.
@@ -124,24 +126,24 @@ void dowrite(unsigned* args, unsigned* ret){
 }
 
 void dotime(unsigned* args, unsigned* ret){
-	mmio_t currenttime = (unsigned *)OSCR;
-	*ret = *currenttime / TIME_CONVERT_CONST;
+	mmio_t oscr = (mmio_t)OSCR;
+	uint64_t currenttime = ((uint64_t)*oscr - (uint64_t)start_time + (uint64_t)((unsigned)-1))%(uint64_t)((unsigned)-1);
+	currenttime += ((uint64_t)rollovercount * (((unsigned)-1) + 1));
+	*ret = currenttime / TIME_CONVERT_CONST;
 }
 
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
-	mmio_t osmr0 = (unsigned *)OSMR_0;
-	mmio_t oier = (unsigned *)OIER;
-	mmio_t oscr = (unsigned *)OSCR;
-	mmio_t icmr = (unsigned *)ICMR;
-	mmio_t iclr = (unsigned *)ICLR;
+	mmio_t osmr0 = (mmio_t)OSMR_0;
+	mmio_t oier = (mmio_t)OIER;
+	mmio_t oscr = (mmio_t)OSCR;
+	mmio_t icmr = (mmio_t)ICMR;
+	mmio_t iclr = (mmio_t)ICLR;
 	*osmr0 = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *oscr; 
-	*oier = 0x1;
-	*icmr = 0x04000000;
+	*oier |= 0x1;
+	*icmr |= 0x04000000;
 	*iclr = 0x0;
 	//set global variable to false and wait for interrupt
 	interrupt = 0;
-//	puts("waiting for interrupt\n");
 	while(!interrupt);
-//	puts("interrupt happened and stuff!\n");
 }

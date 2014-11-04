@@ -20,15 +20,11 @@ extern void exit_user(unsigned, unsigned, unsigned);
 void c_irq_handler(){
 	mmio_t ossr = (mmio_t)OSSR;
 	if(*ossr * OSSR_M0){
-		//set global boolean true to allow sleep function to continue
-		interrupt = 1;
+		rollovercount++;
 		*ossr |= OSSR_M0;
 	}
-	if(*ossr & OSSR_M1){
-		printf("\n\n\nroll!!!\n\n\n");
-		rollovercount++;
+	if(*ossr & OSSR_M1)
 		*ossr |= OSSR_M1;
-	}
 	if(*ossr & OSSR_M2)
 		*ossr |= OSSR_M2;
 	if(*ossr & OSSR_M3)

@@ -129,24 +129,21 @@ void dotime(unsigned* args, unsigned* ret){
 	mmio_t oscr = (mmio_t)OSCR;
 	uint64_t currenttime = (uint64_t)(unsigned)(((uint64_t)0xffffffff + (uint64_t)(1)) + (uint64_t)*oscr - (uint64_t)start_time);
 	currenttime += ((uint64_t)rollovercount)<<32;
-	printf("roll:%d\n", rollovercount);
+//	printf("roll:%d\n", rollovercount);
 	*ret = (unsigned)(currenttime / TIME_CONVERT_CONST);
 }
 
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
 	if(!args[0]<1){
-		mmio_t osmr0 = (mmio_t)OSMR_0;
-		mmio_t oier = (mmio_t)OIER;
-		mmio_t oscr = (mmio_t)OSCR;
-		mmio_t icmr = (mmio_t)ICMR;
-		mmio_t iclr = (mmio_t)ICLR;
-		*osmr0 = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *oscr; 
-		*oier |= 0x1;
-		*icmr |= 0x04000000;
-		*iclr = 0x0;
+		unsigned start = 0;
+		unsigned now = 0;
+		dotime(args, &start);
 		//set global variable to false and wait for interrupt
 		interrupt = 0;
-		while(!interrupt);
+		dotime(args, &now);
+		while(start+args[0]>now){
+			dotime(args, &now);
+		}
 	}
 }

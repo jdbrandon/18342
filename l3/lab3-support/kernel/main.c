@@ -94,17 +94,17 @@ int kmain(int argc, char** argv, uint32_t table) {
 }
 
 void init_timer(){
-	mmio_t osmr1 = (mmio_t)OSMR_1;
-	mmio_t oier = (mmio_t)OIER;
-	mmio_t oscr = (mmio_t)OSCR;
-	mmio_t icmr = (mmio_t)ICMR;
-	mmio_t iclr = (mmio_t)ICLR;
+	mmio_t osmr0 = (mmio_t)OSMR_0;
+        mmio_t oier = (mmio_t)OIER;
+        mmio_t oscr = (mmio_t)OSCR;
+        mmio_t icmr = (mmio_t)ICMR;
+        mmio_t iclr = (mmio_t)ICLR;
 	start_time = *oscr;
 	rollovercount = 0;
-	*osmr1 = start_time; 
-	*oier |= 0x2;
-	*icmr |= 0x08000000;
-	*iclr = 0x0;
+	*osmr0 = start_time; 
+        *oier |= 0x1;
+        *icmr |= 0x04000000;
+        *iclr = 0x0;
 }
 
 /* install_handler - Injects a given custom handler at a specified location.

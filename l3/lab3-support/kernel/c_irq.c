@@ -9,7 +9,6 @@ extern unsigned sp_k;		//store value of kernel stack pointer
 
 extern volatile unsigned interrupt;
 extern volatile unsigned rollovercount;
-extern volatile unsigned start_time;
 
 extern void exit_user(unsigned, unsigned, unsigned);
 
@@ -19,8 +18,8 @@ extern void exit_user(unsigned, unsigned, unsigned);
 */
 void c_irq_handler(){
 	mmio_t ossr = (mmio_t)OSSR;
-	//set global boolean true to allow sleep function to continue
 	if(*ossr * OSSR_M0){
+		//set global boolean true to allow sleep function to continue
 		interrupt = 1;
 		*ossr |= OSSR_M0;
 	}

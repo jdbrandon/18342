@@ -100,6 +100,7 @@ void init_timer(){
 	mmio_t icmr = (mmio_t)ICMR;
 	mmio_t iclr = (mmio_t)ICLR;
 	start_time = *oscr;
+	rollovercount = 0;
 	*osmr1 = start_time; 
 	*oier |= 0x2;
 	*icmr |= 0x08000000;

@@ -134,16 +134,18 @@ void dotime(unsigned* args, unsigned* ret){
 
 void dosleep(unsigned* args){
 	//set timer registers to interrupt when current time + specified time is reached
-	mmio_t osmr0 = (mmio_t)OSMR_0;
-	mmio_t oier = (mmio_t)OIER;
-	mmio_t oscr = (mmio_t)OSCR;
-	mmio_t icmr = (mmio_t)ICMR;
-	mmio_t iclr = (mmio_t)ICLR;
-	*osmr0 = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *oscr; 
-	*oier |= 0x1;
-	*icmr |= 0x04000000;
-	*iclr = 0x0;
-	//set global variable to false and wait for interrupt
-	interrupt = 0;
-	while(!interrupt);
+	if(!args[0]<1){
+		mmio_t osmr0 = (mmio_t)OSMR_0;
+		mmio_t oier = (mmio_t)OIER;
+		mmio_t oscr = (mmio_t)OSCR;
+		mmio_t icmr = (mmio_t)ICMR;
+		mmio_t iclr = (mmio_t)ICLR;
+		*osmr0 = ((unsigned)(args[0] * TIME_CONVERT_CONST)) + *oscr; 
+		*oier |= 0x1;
+		*icmr |= 0x04000000;
+		*iclr = 0x0;
+		//set global variable to false and wait for interrupt
+		interrupt = 0;
+		while(!interrupt);
+	}
 }

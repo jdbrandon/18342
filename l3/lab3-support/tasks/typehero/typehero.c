@@ -21,6 +21,7 @@ int main(int argc, char** argv){
 	sleep(2000);
 	printf("GO!\n");
 	unsigned random = 0;
+	unsigned total_time = 0;
 	unsigned start_time = 0;
 	int step = 1000;
 	int diff = 0;
@@ -31,6 +32,7 @@ int main(int argc, char** argv){
 	while(1){
 		random = *oscr % 8;
 		start_time = time();
+		total_time = time();
 		if(random == 0){
 			printf("a--- ----");
 			read(STDIN_FILENO, &check, 1);
@@ -114,7 +116,7 @@ int main(int argc, char** argv){
 			printf("   miss... Score: %d -%d\n", score, diff/step+1);
 			streak = 0;
 			if(score < -49){
-				printf("Nice try... Better luck next time. Highest Score: %d\n",highscore);
+				printf("Nice try... Better luck next time. Highest Score: %d Time Survived: %d ms\n",highscore, (int)(time()-total_time));
 				break;
 			}
 		}

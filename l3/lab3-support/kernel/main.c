@@ -99,7 +99,8 @@ void init_timer(){
 	mmio_t oscr = (mmio_t)OSCR;
 	mmio_t icmr = (mmio_t)ICMR;
 	mmio_t iclr = (mmio_t)ICLR;
-	*osmr1 = *oscr; 
+	start_time = *oscr;
+	*osmr1 = start_time; 
 	*oier |= 0x2;
 	*icmr |= 0x08000000;
 	*iclr = 0x0;

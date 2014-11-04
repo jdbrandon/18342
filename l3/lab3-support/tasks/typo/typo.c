@@ -6,6 +6,9 @@
  */
 
 #include <unistd.h>
+#include <string.h>
+
+void convert(unsigned, char*);
 
 int main(int argc, char** argv)
 {
@@ -17,8 +20,31 @@ int main(int argc, char** argv)
 		starttime = time();
 		length = read(STDIN_FILENO, rawinput, 100);
 		write(STDOUT_FILENO, rawinput, length);
-		write(STDOUT_FILENO, ((time() - starttime)/1000), 3);
-		write(STDOUT_FILENO, "s", 3);
+		convert((unsigned)(time()-starttime)/100, rawinput);
+		write(STDOUT_FILENO, rawinput, strlen(rawinput));
+		write(STDOUT_FILENO, "s\n", 2);
 	}
-	return 0
+	return 0;
+}
+
+void convert(unsigned t, char* out){
+	unsigned r, tmp, len;
+	int first = 1;
+	tmp = t;
+	len = 0;
+	while(tmp){
+		tmp /= 10;
+		len++;
+	}
+	len++;
+	out[len--] = 0;
+	while(t){
+		r = t % 10;
+		out[len--] = r + '0';
+		if(first){
+			first = 0;
+			out[len--] = '.';
+		}
+		t /= 10;
+	}
 }

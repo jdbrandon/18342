@@ -1,8 +1,10 @@
 /** @file splat.c
  *
- * @brief Displays a spinning cursor.
+ * @Displays a spinning cursor forever.
  *
  * Links to libc.
+ * @Author Keane Lucal <kjlucas@andrew.cmu.edu>
+ * @Author Jeff Brandon <jdbrando@andrew.cmu.edu>
  */
 
 #include <unistd.h>

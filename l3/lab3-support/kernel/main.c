@@ -2,37 +2,13 @@
  * main.c: Kernel main (entry) function
  *
  * Author: Jeff Brandon <jdbrando@andrew.cmu.edu> 
- *	   Keane Lucas  <keansemailaddress@andrew.cmu.edu>
+ *	   Keane Lucas  <kjlucas@andrew.cmu.edu>
  * Date: Sun Oct 12 19:14:20 UTC 2014
  */
 
-/* Define constants in this region */
-#define SWI_ADDR 0x5c0009c0
-#define SWI_VEC 0x08
-#define IRQ_VEC 0x18
-#define SDRAM_BASE 0xa0000000
-#define SDRAM_LIMIT 0xa3ffffff
-#define SFROM_BASE 0x0
-#define SFROM_LIMIT 0xffffff 
-#define EOT 4
-#define BACK_SPACE 8
-#define DELETE 127
-#define NEW_LINE 10
-#define RETURN 13
-#define ERROR_CASE ((unsigned*) 0xbadc0de)
-
 /* include necessary header files */
-#include <types.h>
-#include <bits/errno.h>
-#include <bits/fileno.h>
-#include <bits/swi.h>
 #include <exports.h>
-#include <arm/psr.h>
-#include <arm/exception.h>
-#include <arm/interrupt.h>
-#include <arm/timer.h>
-
-/* declare functions */
+#include <const.h>
 
 /* swi_handler - Assembly function that performs preliminary tasks for swi 
    handling before calling a c swi handler.

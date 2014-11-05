@@ -1,32 +1,4 @@
-/* Define constants in this region */
-#define SWI_ADDR 0x5c0009c0
-#define SDRAM_BASE 0xa0000000
-#define SDRAM_LIMIT 0xa3ffffff
-#define SFROM_BASE 0x0
-#define SFROM_LIMIT 0xffffff 
-#define EOT 4
-#define BACK_SPACE 8
-#define DELETE 127
-#define NEW_LINE 10
-#define RETURN 13
-
-/* Memory mapped io constants */
-#define INTERRUPT_BASE 0x40d00000
-#define ICIP (INTERRUPT_BASE + 0x0)  /* Interrupt controller IRQ pending register */
-#define ICMR (INTERRUPT_BASE + 0x4)  /* Interrupt controller mask register */
-#define ICLR (INTERRUPT_BASE + 0x8)  /* Interrupt controller level register */
-#define ICFP (INTERRUPT_BASE + 0xc)  /* Interrupt controller FIQ pending register */
-#define ICPR (INTERRUPT_BASE + 0x10) /* Interrupt controller pending register */
-#define ICCR (INTERRUPT_BASE + 0x14) /* Interrupt controller control register */
-
-
-extern void exit_user(unsigned, unsigned, unsigned);
-
 #include <types.h>
-#include <bits/swi.h>
-#include <bits/fileno.h>
-#include <bits/errno.h>
-#include <exports.h>
 #include <arm/timer.h>
 
 /* global variables */
@@ -36,6 +8,8 @@ extern unsigned lr_k; 		//store value of kernel link register
 extern unsigned sp_k;		//store value of kernel stack pointer
 
 extern volatile unsigned interrupt;
+
+extern void exit_user(unsigned, unsigned, unsigned);
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.

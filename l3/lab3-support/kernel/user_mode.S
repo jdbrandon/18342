@@ -9,6 +9,7 @@
 @ Date: Sun Oct 12 19:05:18 UTC 2014
 
 #include <bits/swi.h>
+#include <const.h>
 	
 	.file "user_mode.S"
 	.text
@@ -28,5 +29,5 @@ user_mode:
 	push	{r1}
 	push	{r0}
 	mov	lr, pc
-	ldr	pc, =0xa0000000
+	ldr	pc, =USER_STACK_BASE
 	swi	EXIT_SWI

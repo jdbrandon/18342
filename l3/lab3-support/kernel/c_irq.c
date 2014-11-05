@@ -11,16 +11,6 @@
 #define RETURN 13
 
 /* Memory mapped io constants */
-#define TIMER_BASE_ADDR 0x40a00000
-#define OSMR_0 (TIMER_BASE_ADDR + 0x0) /* OS Timer Match register 0 */
-#define OSMR_1 (TIMER_BASE_ADDR + 0x4) /* OS Timer Match register 1 */
-#define OSMR_2 (TIMER_BASE_ADDR + 0x8) /* OS Timer Match register 2 */
-#define OSMR_3 (TIMER_BASE_ADDR + 0xc) /* OS Timer Match register 3 */
-#define OSCR (TIMER_BASE_ADDR + 0x10) /* OS Timer counter register */
-#define OSSR (TIMER_BASE_ADDR + 0x14) /* OS Timer status register */
-#define OWER (TIMER_BASE_ADDR + 0x18) /* OS Timer watchdog enable register */
-#define OIER (TIMER_BASE_ADDR + 0x1c) /* OS Timer interrupt enable register */
-
 #define INTERRUPT_BASE 0x40d00000
 #define ICIP (INTERRUPT_BASE + 0x0)  /* Interrupt controller IRQ pending register */
 #define ICMR (INTERRUPT_BASE + 0x4)  /* Interrupt controller mask register */
@@ -55,12 +45,12 @@ void c_irq_handler(){
 	mmio_t ossr = (mmio_t)OSSR;
 	//set global boolean true to allow sleep function to continue
 	interrupt = 1;
-	if(*ossr * OSTMR_OSSR_M0)
-		*ossr |= OSTMR_OSSR_M0;
-	if(*ossr & OSTMR_OSSR_M1)
-		*ossr |= OSTMR_OSSR_M1;
-	if(*ossr & OSTMR_OSSR_M2)
-		*ossr |= OSTMR_OSSR_M2;
-	if(*ossr & OSTMR_OSSR_M3)
-		*ossr |= OSTMR_OSSR_M3;
+	if(*ossr * OSSR_M0)
+		*ossr |= OSSR_M0;
+	if(*ossr & OSSR_M1)
+		*ossr |= OSSR_M1;
+	if(*ossr & OSSR_M2)
+		*ossr |= OSSR_M2;
+	if(*ossr & OSSR_M3)
+		*ossr |= OSSR_M3;
 }

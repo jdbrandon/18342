@@ -57,7 +57,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 void doread(unsigned* args, unsigned* ret){
 	int fileno, c;
 	char* buf;
-	size_t count;;
+	size_t count;
 	size_t pcount = 0; //processed char count
 	fileno = (int) *args++;
 	buf = (char*) *args++;
@@ -134,16 +134,20 @@ void dotime(unsigned* args, unsigned* ret){
 }
 
 void dosleep(unsigned* args){
-	//set timer registers to interrupt when current time + specified time is reached
-	if(!args[0]<1){
-		unsigned start = 0;
-		unsigned now = 0;
+	//wait for time to elapse
+	unsigned start = 0;
+	unsigned now = 0;
+	if(args[0]){
 		dotime(args, &start);
-		//set global variable to false and wait for interrupt
-		interrupt = 0;
-		dotime(args, &now);
-		while(start+args[0]>now){
-			dotime(args, &now);
+		now = start;
+		if(start+args[0] > start){ 
+			while(now < (start + args[0]))
+				dotime(args, &now);
+		} else {
+			while((now/10) > 0)
+				dotime(args, &now);			
+			while(now < (start + args[0]))
+				dotime(args, &now);
 		}
 	}
 }

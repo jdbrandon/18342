@@ -1,9 +1,17 @@
 *.o
+*.bin
+*.dep
 *.img
 *.tar.gz
 *.tgz
 *.tar
 *.img.bad
 *.save
+*.conf
+l3/lab3-support/kernel/kernel
+l3/lab3-support/tasks/bin/
+l3/lab3-support/tasks/libc/libc.a
+opt
 support
 submissions
+qemuin.txt

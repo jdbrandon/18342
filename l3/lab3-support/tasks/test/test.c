@@ -12,8 +12,9 @@ int main(int argc, char** argv){
 	mmio_t osmr = (mmio_t) OSMR_0;
 	*osmr = 18432000;
 	*oscr = 0x0;
-	while(1){
+	while(time() < (0xffffffff / 3686.4)){
 		printf("time:%ld, \n", time());
 		sleep(200);
 	}
+	return 0;
 }

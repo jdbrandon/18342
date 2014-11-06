@@ -3,13 +3,13 @@
  *
  * @brief Definitions for the OS timer.
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
+ * @author Kartik Subramanian 	<ksubrama@andrew.cmu.edu>
+ * @author Jeff Brandon 	<jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas 		<kjlucas@andrew.cmu.edu>
  *
- * @date 2008-07-07
+ * @date 2008-07-07 (original authored)
+ * @date 2014-11-06 (Jeff refactored)
  *
- * @note The addresses here are the addresses stated in the Intel PXA255
- *       Processor Developer's Manual minus 0x40000000.  This is so that
- *       this memory region can be relocated if we ever turn on the MMU.
  */
 
 #ifndef _TIMER_H_

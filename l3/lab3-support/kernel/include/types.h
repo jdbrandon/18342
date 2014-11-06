@@ -8,7 +8,11 @@
  *
  * @date   2006-05-21
  * @date   2008-10-29 (added limits)
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
+ * @date   2014-11-06 (Jeff added mmio_t)
+ *
+ * @author Kartik Subramanian 	<ksubrama@andrew.cmu.edu>
+ * @author Jeff Brandon 	<jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas 		<kjlucas@andrew.cmu.edu>
  */
 
 #ifndef _BITS_TYPES_H_

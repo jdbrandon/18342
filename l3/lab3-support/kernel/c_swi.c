@@ -1,3 +1,14 @@
+/* @file c_swi.c
+
+   @description - swi handler written in C to be called from assembly after initial 
+      handling of the intterupt (preparing swi number and args)
+
+   @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+   @author Keane Lucas  <kjlucas@andrew.cmu.edu>
+
+   @date 2014-11-06
+*/
+
 #include <bits/swi.h>
 #include <bits/fileno.h>
 #include <bits/errno.h>
@@ -9,13 +20,12 @@
 void doread(unsigned*, unsigned*);
 void dowrite(unsigned*, unsigned*);
 void dosleep(unsigned*);
-void dotime(unsigned*, unsigned*);
+void dotime(unsigned*);
 extern void exit_user(unsigned, unsigned, unsigned);
 
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
 extern unsigned sp_k;		//store value of kernel stack pointer
-extern volatile unsigned interrupt;
 extern volatile unsigned rollovercount;
 extern volatile unsigned start_time;
 
@@ -42,7 +52,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 		break;
 	case TIME_SWI:
 		/*do time*/
-		dotime(args, ret);
+		dotime(ret);
 		break;
 	case SLEEP_SWI:
 		/*do sleep*/
@@ -51,9 +61,20 @@ void c_swi_handler(int swi_num, unsigned *args){
 	default:
 		*args = -0xbadc0de;
 	}
-//	puts("goin back to userland...\n");
 }
 
+/* doread performs the read system call
+   Parameters:
+	args - arguments passed to the function. args[0] is the file descriptor
+		of the file to read from, args[1] is the address of the buffer
+		to fill, and args[2] is the number of bytes to read.
+	ret - output value set by doread on completion.
+   Returns:
+	On completion ret will be the number of bytes read if
+        read is successful.
+        EBADF is returned when the input file descriptor isn't stdin.
+        EFAULT is returned when the buffer read into is outside valid bounds.
+*/
 void doread(unsigned* args, unsigned* ret){
 	int fileno, c;
 	char* buf;
@@ -101,6 +122,18 @@ void doread(unsigned* args, unsigned* ret){
 	}
 }
 
+/* dowrite performs the write system call
+
+   Parameters:
+	args - arguments to the function. arg[0] is the file descriptor to write to,
+		args[1] is the address of the buffer to write from, and args[2] is 
+		the number of bytes that should be written.
+	ret - output parameter set on completion of dowrite.
+   Returns:
+	On completion ret will contain the number of bytes written on success.
+	EBADF will be returned if the file descriptor to write to isn't stdout.
+	EFAULT will be returned if the buffer isn't within valid bounds.
+*/
 void dowrite(unsigned* args, unsigned* ret){
 	int fileno;
 	char* buf;
@@ -125,29 +158,49 @@ void dowrite(unsigned* args, unsigned* ret){
 	*ret = pcount;
 }
 
-void dotime(unsigned* args, unsigned* ret){
+/* dotime implements the time system call. Current time is calculated using a start time offset
+      generated at kernel boot time and a rollover count. Rollover count keeps track of the 
+      number of times OSCR has passed the start time and is used to add an appropriate number of
+      seconds to the system time for each rollover that has occured.
+
+   Parameters:
+	ret - output parameter that is set to current system time in miliseconds.
+   Returns:
+	Current time in miliseconds since system boot in the value pointed to by ret.
+*/
+void dotime(unsigned* ret){
 	mmio_t oscr = (mmio_t)OSCR;
 	uint64_t currenttime = (uint64_t)(unsigned)(((uint64_t)0xffffffff + (uint64_t)(1)) + (uint64_t)*oscr - (uint64_t)start_time);
 	currenttime += ((uint64_t)rollovercount)<<32;
-//	printf("roll:%d\n", rollovercount);
 	*ret = (unsigned)(currenttime / TIME_CONVERT_CONST);
 }
 
+/* dosleep implements the sleep system call. Busy wait solution that waits for system time to be
+	equal to start time plus the number of miliseconds passed as a parameter.
+
+   Parameters:
+	args - args[0] is the number of miliseconds to sleep.
+
+   Returns: nothing
+
+   Note: This implementation of sleep handles the edge case when (current_time+sleep_time) overflows
+         a 32 bit value.
+*/
 void dosleep(unsigned* args){
 	//wait for time to elapse
 	unsigned start = 0;
 	unsigned now = 0;
 	if(args[0]){
-		dotime(args, &start);
+		dotime(&start);
 		now = start;
 		if(start+args[0] > start){ 
 			while(now < (start + args[0]))
-				dotime(args, &now);
+				dotime(&now);
 		} else {
-			while((now/10) > 0)
-				dotime(args, &now);			
+			while((now/10) > 0) //make sure loop exits in case 0 isn't sampled
+				dotime(&now);			
 			while(now < (start + args[0]))
-				dotime(args, &now);
+				dotime(&now);
 		}
 	}
 }

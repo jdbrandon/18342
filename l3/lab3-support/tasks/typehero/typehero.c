@@ -1,3 +1,12 @@
+/* typehero.c
+
+   Description: A game to test functionality of our kernel.
+
+   Author: Keane Lucas  <kjlucas@andrew.cmu.edu>
+   Author: Jeff Brandon <jdbrando@andrew.cmu.edu>
+
+   Date Thu Nov  6 15:33:58 EST 2014
+*/
 #define TIMER_BASE_ADDR 0x40a00000
 #define OSCR (TIMER_BASE_ADDR + 0x10) /* OS Timer counter register */
 

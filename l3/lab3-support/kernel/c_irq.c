@@ -1,17 +1,19 @@
+/* @file c_irq.c
+
+   @description - irq interrupt handler. Currently only responds to
+      OSMR0 interrupts in a defined way. After handling the interrupt
+      the corresponding bit in OSSR is cleared.
+
+   @author Keane Lucas  <kjlucas@andrew.cmu.edu>
+   @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+
+   @date 2014-11-06
+*/
 #include <types.h>
 #include <exports.h>
 #include <arm/timer.h>
 
-/* global variables */
-unsigned instr1;	//first instruction we clobber
-unsigned instr2;	//second instruction we clobber
-extern unsigned lr_k; 		//store value of kernel link register  
-extern unsigned sp_k;		//store value of kernel stack pointer
-
-extern volatile unsigned interrupt;
 extern volatile unsigned rollovercount;
-
-extern void exit_user(unsigned, unsigned, unsigned);
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.

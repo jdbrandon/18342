@@ -1,3 +1,10 @@
+/* @file const.h
+   @Description - contains values that are reused throughout
+      the kernel
+   @Author Jeff Brandon <jdbrando@andrew.cmu.edu>
+   @Author Keane Lucas  <kjlucas@andrew.cmu.edu>
+   @Date 11-06-2014
+*/
 #ifndef _CONST_VALS_H_
 #define _CONST_VALS_H_
 

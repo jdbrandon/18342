@@ -3,7 +3,7 @@
  *
  * Author: Jeff Brandon <jdbrando@andrew.cmu.edu> 
  *	   Keane Lucas  <kjlucas@andrew.cmu.edu>
- * Date: Sun Oct 12 19:14:20 UTC 2014
+ * Date: Thu Nov  6 15:12:17 EST 2014
  */
 
 /* include necessary header files */
@@ -43,8 +43,8 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 */
 extern void exit_user(unsigned, unsigned, unsigned);
 
+/* function declarations */
 unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
-
 void	init_timer();
 
 /* global variables */
@@ -55,7 +55,6 @@ unsigned irq_instr2;
 unsigned lr_k; 		//store value of kernel link register  
 unsigned sp_k;		//store value of kernel stack pointer
 uint32_t global_data;
-volatile unsigned interrupt;
 volatile unsigned rollovercount;
 volatile unsigned start_time;
 
@@ -73,8 +72,9 @@ inline void restore_old_handlers(unsigned* swiaddr, unsigned* irqaddr){
 	*restore = irq_instr2;
 }
 
-/* main - installs custom swi handler, executes a user program, restores
-   the default swi handler, and returns the exit status of the user program. 
+/* main - installs custom swi/irq handlers, initializes the system timer
+   executes a user program, restores the default swii/irq handler, and returns 
+   the exit status of the user program. 
 */
 int kmain(int argc, char** argv, uint32_t table) {
 	int ret;
@@ -93,6 +93,11 @@ int kmain(int argc, char** argv, uint32_t table) {
 	return ret;
 }
 
+/* init_timer sets up the system timer. It saves the boot time offset in 
+      a global variable start_time. Also the global variable rollovercount
+      is initialized to 0. Lastly the interrupt for rollovers occuring is set
+      up by setting OSMR0, OIER, ICMR, and ICLR to appropriate values.
+*/
 void init_timer(){
 	mmio_t osmr0 = (mmio_t)OSMR_0;
         mmio_t oier = (mmio_t)OIER;
@@ -111,9 +116,8 @@ void init_timer(){
    Specifically, at the given address an instruction is written the causes
    execution to jump to the custom handler.
 	Parameters:
-	vec - The address of memory where the injected instructions 
-		should be placed.
-	handler - the address of the custom swi handler.
+	vec - Where the offset to where the handler should be written is found.
+	handler - the address of the custom handler.
 	store1 and store2 - used to save the values overwritten
 */
 unsigned *install_handler(int vec, interrupt_handler_t handler, unsigned* store1, unsigned* store2){

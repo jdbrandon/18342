@@ -2,8 +2,9 @@
  *
  * Prints the time it takes for a user to enter some text
  *
- * @Author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @Author Keane Lucas  <kjlucas@andrew.cmu.edu>
  * @Author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @Date Thu Nov  6 15:33:08 EST 2014
  */
 
 #include <unistd.h>

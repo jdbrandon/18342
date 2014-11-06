@@ -3,13 +3,12 @@
  *
  * @brief Definitions for the interrupt controller.
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
+ * @author Kartik Subramanian 	<ksubrama@andrew.cmu.edu>
+ * @author Jeff Brandon 	<jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas 		<kjlucas@andrew.cmu.edu>
  *
- * @date 2008-07-21
- *
- * @note The addresses here are the addresses stated in the Intel PXA255
- *       Processor Developer's Manual minus 0x40000000.  This is so that
- *       this memory region can be relocated if we ever turn on the MMU.
+ * @date 2008-07-21 (Kartik authored)
+ * @date 2014-11-06 (Jeff refactored)
  */
 
 #ifndef _INTERRUPT_H_

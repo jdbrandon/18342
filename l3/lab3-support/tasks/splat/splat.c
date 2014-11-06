@@ -3,8 +3,9 @@
  * @Displays a spinning cursor forever.
  *
  * Links to libc.
- * @Author Keane Lucal <kjlucas@andrew.cmu.edu>
+ * @Author Keane Lucas  <kjlucas@andrew.cmu.edu>
  * @Author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @Date Thu Nov  6 15:31:54 EST 2014
  */
 
 #include <unistd.h>

@@ -20,6 +20,7 @@
 #define NEW_LINE 	10
 #define RETURN 		13
 #define ERROR_CASE 	((unsigned*) 0xbadc0de)
+#define R8_VAL		0xa3ebefdc
 
 #define USER_STACK_BASE	0xa0000000
 #define IRQ_STACK_BASE 	0xa2500000

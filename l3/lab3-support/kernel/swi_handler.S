@@ -10,10 +10,12 @@
 	.align 2
 	.global swi_handler
 
+#include <const.h>
+
 swi_handler:
 	sub	sp, sp, #4		@save user registers
 	stmfd 	sp!, {r0-r12, lr}
-	ldr	r8, [sp, #60]		@restore value of r8 
+	ldr	r8, =R8_VAL 		@restore value of r8 
 	mrs	r2, spsr
 	str	r2, [sp, #14*4]
 	mov	r1, sp			@r1 points to arguments on stack

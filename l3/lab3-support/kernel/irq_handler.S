@@ -15,6 +15,7 @@ irq_handler:
 	ldr	sp, =IRQ_STACK_BASE
 	sub	sp, sp, #4
 	stmfd 	sp!, {r0-r12, lr}
+	ldr	r8, =R8_VAL
 	mrs	r2, spsr
 	str	r2, [sp, #14*4]
 	mov	r1, sp			@r1 points to arguments on stack

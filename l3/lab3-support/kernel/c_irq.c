@@ -1,4 +1,5 @@
 #include <types.h>
+#include <exports.h>
 #include <arm/timer.h>
 
 /* global variables */
@@ -24,6 +25,7 @@ void c_irq_handler(){
 		*ossr |= OSSR_M0;
 	}
 	if(*ossr & OSSR_M1){
+		printf("\n\n\nroll!!!\n\n\n");
 		rollovercount++;
 		*ossr |= OSSR_M1;
 	}

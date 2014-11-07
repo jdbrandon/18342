@@ -1,6 +1,0 @@
-PROGS_SLEEP_OBJS := sleeptest.o
-PROGS_SLEEP_OBJS := $(PROGS_SLEEP_OBJS:%=$(TDIR)/sleeptest/%)
-ALL_OBJS += $(PROGS_SLEEP_OBJS)
-
-$(TDIR)/bin/sleeptest : $(TSTART) $(PROGS_SLEEP_OBJS) $(TLIBC)
-

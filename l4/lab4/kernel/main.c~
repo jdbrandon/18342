@@ -39,6 +39,14 @@ extern void irq_handler(void*);
 */
 extern int user_mode(int, char*[], unsigned*, unsigned*);
 
+/* exit_user - performs steps to exit user mode
+	Parameters:
+	kernel_lr - value of kernel link register
+	kernel_sp - value of kernel stack pointer
+	exit_status - exit status of user program
+*/
+extern void exit_user(unsigned, unsigned, unsigned);
+
 /* function declarations */
 unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 void	init_timer();

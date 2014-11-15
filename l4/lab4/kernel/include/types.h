@@ -49,6 +49,10 @@ typedef unsigned long long  uint64_t;
 typedef int32_t             intptr_t;
 typedef uint32_t            uintptr_t;
 
+/* --- Useful Data Types --- */
+
+typedef volatile unsigned * mmio_t;
+
 #endif /* ASSEMBLER */
 
 /* --- Sizes --- */

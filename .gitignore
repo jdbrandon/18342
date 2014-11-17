@@ -8,9 +8,12 @@
 *.img.bad
 *.save
 *.conf
-l3/lab3-support/kernel/kernel
-l3/lab3-support/tasks/bin/
-l3/lab3-support/tasks/libc/libc.a
+l3/lab3/kernel/kernel
+l3/lab3/tasks/bin/
+l3/lab3/tasks/libc/libc.a
+l4/lab4/kernel/kernel
+l4/lab4/tasks/bin/
+l4/lab4/tasks/libc/libc.a
 opt
 support
 submissions

@@ -32,7 +32,7 @@ static uint8_t group_run_bits;
 /* This unmap table finds the bit position of the lowest bit in a given byte
  * Useful for doing reverse lookup.
  */
-static uint8_t prio_unmap_table[]  __attribute__((unused)) =
+static uint8_t prio_unmap_table[] =
 {
 
 0, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0,
@@ -96,9 +96,17 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
  *
  * This function needs to be externally synchronized.
  */
-tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
+tcb_t* runqueue_remove(uint8_t prio)
 {
-	return (tcb_t *)1; // fix this; dummy return to prevent warning messages	
+	tcb_t* ret;
+	ret = run_list[prio];
+	run_list[prio] = NULL;
+	
+	run_bits[prio/8] &= ~(1<<(prio%8));
+	if(run_bits[prio/8] == 0)
+		group_run_bits &= ~(1<<(prio/8));
+
+	return ret;
 }
 
 /**
@@ -107,5 +115,8 @@ tcb_t* runqueue_remove(uint8_t prio  __attribute__((unused)))
  */
 uint8_t highest_prio(void)
 {
-	return 1; // fix this; dummy return to prevent warning messages	
+	uint8_t grp, bit;
+	grp = prio_unmap_table[group_run_bits];
+	bit = prio_unmap_table[run_bits[grp]];
+	return (8 * grp) + bit;
 }

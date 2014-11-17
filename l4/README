@@ -1,0 +1,4 @@
+Directory for lab4 work.
+########################
+This lab involves implementing a simple OS that supports concurrent tasks.
+Scheduling is done using a rate monotonic implementation.

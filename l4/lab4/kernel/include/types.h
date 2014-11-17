@@ -96,5 +96,7 @@ typedef volatile unsigned * mmio_t;
 #define LONG_MIN     INT32_MIN
 #define LLONG_MIN    INT64_MIN
 
+#define NULL (void*) 0
+
 
 #endif /* _BITS_TYPES_H_ */

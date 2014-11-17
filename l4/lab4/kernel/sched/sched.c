@@ -50,6 +50,8 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
 {
-	
+	//divide up user stack
+
+	//initialize kernel context (if any?)	
 }
 

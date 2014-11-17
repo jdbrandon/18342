@@ -15,19 +15,19 @@
 
 
 
-static tcb_t* run_list[OS_MAX_TASKS]  __attribute__((unused));
+static tcb_t* run_list[OS_MAX_TASKS];
 
 /* A high bit in this bitmap means that the task whose priority is
  * equal to the bit number of the high bit is runnable.
  */
-static uint8_t run_bits[OS_MAX_TASKS/8] __attribute__((unused));
+static uint8_t run_bits[OS_MAX_TASKS/8];
 
 /* This is a trie structure.  Tasks are grouped in groups of 8.  If any task
  * in a particular group is runnable, the corresponding group flag is set.
  * Since we can only have 64 possible tasks, a single byte can represent the
  * run bits of all 8 groups.
  */
-static uint8_t group_run_bits __attribute__((unused));
+static uint8_t group_run_bits;
 
 /* This unmap table finds the bit position of the lowest bit in a given byte
  * Useful for doing reverse lookup.
@@ -58,7 +58,12 @@ static uint8_t prio_unmap_table[]  __attribute__((unused)) =
  */
 void runqueue_init(void)
 {
-	
+	int i;
+	group_run_bits = 0;
+	for(i=0; i<(OS_MAX_TASKS/8); i++)
+		run_bits[i] = 0;	
+	for(i=0; i<OS_MAX_TASKS; i++)
+		run_list[i] = NULL;
 }
 
 /**
@@ -69,9 +74,18 @@ void runqueue_init(void)
  * only requirement is that the run queue for that priority is empty.  This
  * function needs to be externally synchronized.
  */
-void runqueue_add(tcb_t* tcb  __attribute__((unused)), uint8_t prio  __attribute__((unused)))
+void runqueue_add(tcb_t* tcb, uint8_t prio)
 {
+	tcb->native_prio = prio;
 	
+	while(run_bits[prio/8] & (prio%8))
+		prio++;
+	group_run_bits |= 1 << (prio/8);
+	run_bits[prio/8] |= 1 << (prio%8);
+
+	tcb->cur_prio = prio;
+	
+	run_list[prio] = tcb;
 }
 
 

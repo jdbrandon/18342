@@ -2,13 +2,17 @@
  *
  * @brief time sycall wrapper
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-10-31
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @date 11-16-2014
  */
 
+#include <bits/swi.h>
 #include <asm.h>
 
 	.file "task_create.S"
+	.align 2
+	.global task_create
 
-FUNC(task_create)
-	@ Add code here.  Put your name at the top.
+task_create:
+	swi CREATE_SWI 

@@ -2,13 +2,15 @@
  *
  * @brief time sycall wrapper
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-10-31
+ * @Author Jeff Brandon
+ * @date 2014-11-01
  */
 
 #include <asm.h>
+#include <bits/swi.h>
 
 	.file "time.S"
 
 FUNC(time)
-	@ Add code here.  Put your name at the top.
+	swi 	TIME_SWI
+	mov 	pc, lr

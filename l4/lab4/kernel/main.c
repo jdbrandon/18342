@@ -81,9 +81,13 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
 	init_timer();
+	/* init scheduler */
+	init_sched();
+	/* init other stuff? */
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
+	/* should never get here */
 	restore_old_handlers(swiaddr, irqaddr);
-	assert(0);        /* should never get here */
+	assert(0);        
 }
 
 /* init_timer sets up the system timer. It saves the boot time offset in 

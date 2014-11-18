@@ -63,7 +63,11 @@ void dev_wait(unsigned int dev)
 {
 	tcb_t* ctcb = get_cur_tcb();
 	runqueue_remove(ctcb->cur_prio);
-	devices[dev].sleep_queue = ctcb;
+	tcb_t* temp = devices[dev].sleep_queue;
+	while(temp->sleep_queue != NULL){
+		temp = temp->sleep_queue;
+	}
+	temp->sleep_queue = ctcb;
 }
 
 

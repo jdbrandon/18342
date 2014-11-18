@@ -28,6 +28,7 @@ extern void runqueue_add(tcb_t*, uint8_t);
 extern void idle(void);
 extern void sched_init(task_t*);
 extern void allocate_tasks(task_t**, size_t);
+extern void dispatch_sleep(void);
 
 int task_create(task_t* tasks, size_t num_tasks)
 {
@@ -48,16 +49,17 @@ int task_create(task_t* tasks, size_t num_tasks)
 	for(i = 0; i<num_tasks; i++){
 		runqueue_add(&system_tcb[i], (uint8_t)(1+((tasks[i].T-mintime)/(maxtime-mintime))*62)); //if something goes wrong DEBUG ME
 	}
-	//add idle queue
-	//set up the link register
 
 	sched_init(best);
+
 //should never get to this point
   return 0; /* remove this line after adding your code */
 }
 
-int event_wait(unsigned int dev  __attribute__((unused)))
+int event_wait(unsigned int dev)
 {
+	dev_wait(dev);
+	dispatch_sleep();
   return 1; /* remove this line after adding your code */	
 }
 

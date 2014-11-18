@@ -18,7 +18,7 @@
 #include <exports.h>
 #endif
 
-static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
+static tcb_t* cur_tcb; /* use this if needed */
 
 /**
  * @brief Initialize the current TCB and priority.
@@ -28,7 +28,9 @@ static __attribute__((unused)) tcb_t* cur_tcb; /* use this if needed */
  */
 void dispatch_init(tcb_t* idle __attribute__((unused)))
 {
-	
+	//what else to do here? make TCB? pretty empty meow...
+	//YEAH CREATE THE IDLE TCB - will be called in dispatch_save if no tasks available
+	cur_tcb = &system_tcb[63];
 }
 
 
@@ -42,7 +44,9 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	
+	uint8_t hprio = highest_prio(); 			//get highest priority num
+	tcb_t* htcb = &system_tcb[hprio]; 			//get highest priority tcb
+	ctx_switch_full(&htcb->context.r4, &cur_tcb->context.r4); 	//full context switch to new task
 }
 
 /**
@@ -53,7 +57,9 @@ void dispatch_save(void)
  */
 void dispatch_nosave(void)
 {
-
+	uint8_t hprio = highest_prio();		//get highest priority num
+	tcb_t* htcb = &system_tcb[hprio];	//get highest priority tcb
+	ctx_switch_half(&htcb->context.r4);	//half context switch to new task
 }
 
 
@@ -65,6 +71,9 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
+	uint8_t hprio = highest_prio(); 			//get highest priority num
+	tcb_t* htcb = &system_tcb[hprio]; 			//get highest priority tcb
+	ctx_switch_full(&htcb->context.r4, &cur_tcb->context.r4); 	//full context switch to new task
 	
 }
 
@@ -73,7 +82,7 @@ void dispatch_sleep(void)
  */
 uint8_t get_cur_prio(void)
 {
-	return 1; //fix this; dummy return to prevent compiler warning
+	return cur_tcb->cur_prio; //fix this; dummy return to prevent compiler warning
 }
 
 /**
@@ -81,5 +90,5 @@ uint8_t get_cur_prio(void)
  */
 tcb_t* get_cur_tcb(void)
 {
-	return (tcb_t *) 0; //fix this; dummy return to prevent compiler warning
+	return (tcb_t *) cur_tcb; //fix this; dummy return to prevent compiler warning
 }

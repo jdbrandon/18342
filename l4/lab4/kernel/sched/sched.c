@@ -20,9 +20,15 @@
 
 tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 
-void sched_init(task_t* main_task  __attribute__((unused)))
+
+void sched_init(task_t* main_task)
 {
 	
+	
+	//set the timer for the next interrupt
+	//HOW?!?!?!? Devices...?
+	//run the main_task	
+	main_task->lambda(main_task->data);
 }
 
 /**

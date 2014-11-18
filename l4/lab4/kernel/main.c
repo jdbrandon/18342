@@ -21,10 +21,10 @@
 */
 extern void swi_handler(void*);
 
-/* irq_handler - Assembly function that performs preliminary tasks for irq 
+/* irq_wrapepr- Assembly function that performs preliminary tasks for irq 
    handling before calling a c irq handler.
 */
-extern void irq_handler(void*);
+extern void irq_wrapper(void*);
 
 /* user_mode - Assembly function that switches processor state from service
    mode to user mode, then begins execution of a user program. 
@@ -76,7 +76,7 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 	app_startup();
 	global_data = table;
 	swiaddr = install_handler(SWI_VEC, swi_handler, &swi_instr1, &swi_instr2);
-	irqaddr = install_handler(IRQ_VEC, irq_handler, &irq_instr1, &irq_instr2);
+	irqaddr = install_handler(IRQ_VEC, irq_wrapper, &irq_instr1, &irq_instr2);
 	if(swiaddr == ERROR_CASE)
 		puts("SWI_VEC has bad value!\n");
 	if(irqaddr == ERROR_CASE)

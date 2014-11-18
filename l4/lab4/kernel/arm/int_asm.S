@@ -58,7 +58,7 @@ FUNC(irq_wrapper)
 	ldr      r8, [ip]
 	
 	/* Call the IRQ handler in C. */
-	bl       irq_handler
+	bl        c_irq_handler
 	@mov      r0, sp
 	@mov      r1, #128
 	@bl       hexdump

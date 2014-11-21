@@ -81,7 +81,7 @@ void sorttasks(task_t* tasks, size_t count){
 	for(i = 0; i < (count-1); i++){
 		min = tasks[i].T;
 		minpos = i;
-		for(j = 0; j < count; j++){
+		for(j = i+1; j < count; j++){
 			if(tasks[j].T < min){
 				min = tasks[j].T;
 				minpos = j;

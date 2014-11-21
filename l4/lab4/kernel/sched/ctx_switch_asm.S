@@ -16,6 +16,27 @@
 #include <arm/psr.h>
 
 /**
+ * @brief Kernel context initialization routine.
+ *
+ * r0 contains the user entry point.
+ * r1 contains the single argument to the user function called.
+ * r2 contains the user-mode stack pointer.
+ * r3 contains the kernel stack address
+ * Upon completion, we should be in user mode.
+ */
+
+FUNC(ctx_init)
+	mov	 sp, r3
+	stmfd    sp!, {r0}	@pc will be usr entrance address
+	ldr	 lr, =0xfeedb007
+	mov	 r5, r1
+	mov	 r6, r2
+	stmfd    sp!, {r0-r3, r8, ip, lr} 
+	mrs      r0, spsr
+	stmfd    sp, {r0, sp, lr}^
+	add      sp, sp, #-12
+
+/**
  * @brief Special exit routine from the scheduler that launches a task for the
  * first time.
  *

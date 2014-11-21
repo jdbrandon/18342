@@ -13,16 +13,30 @@
 #include <exports.h>
 #include <arm/timer.h>
 
+void dev_update(unsigned long);
+void dotime(unsigned*);
+
 extern volatile unsigned rollovercount;
+extern volatile unsigned start_time;
+static unsigned lastoscr = 0;
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.
 	Parameters: None 
 */
 void c_irq_handler(){
+	unsigned stamp;
+	mmio_t oscr = (mmio_t)OSCR;
 	mmio_t ossr = (mmio_t)OSSR;
-	if(*ossr * OSSR_M0){
-		rollovercount++;
+	mmio_t osmr0 = (mmio_t)OSMR_0;
+	if(*ossr & OSSR_M0){
+		if(lastoscr<start_time && *oscr>=start_time){
+			rollovercount++;
+		}
+		lastoscr = *oscr;
+		dotime(&stamp);
+		dev_update(stamp);
+		*osmr0 += OSTMR_FREQ/100;
 		*ossr |= OSSR_M0;
 	}
 	if(*ossr & OSSR_M1)

@@ -82,22 +82,16 @@ void dev_update(unsigned long millis)
 {
 	//query all devices to see if millis is more than next match
 	int i;
-	unsigned long nextTimeout=0;
 	tcb_t* current;
 	for(i=0; i < NUM_DEVICES; i++){
 		if(devices[i].next_match < millis){
 			do{
 				current = devices[i].sleep_queue;
-				runqueue_add(current, current->native_prio);
+				runqueue_add(current, current->cur_prio);
 			}while(current->sleep_queue != NULL);
 			devices[i].next_match += dev_freq[i];
-			devices[i].next_match = 0;
+			devices[i].sleep_queue = NULL;
 		}
-		else if(devices[i].next_match < nextTimeout || nextTimeout == (unsigned long)0){
-			nextTimeout = devices[i].next_match;
-		}
-	}	
-	//set osmr0 to timout at nextTimeout. Will need to convert milliseconds from start to OSMR value using ???
-
+	}
 }
 

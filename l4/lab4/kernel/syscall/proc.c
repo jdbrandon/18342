@@ -35,28 +35,14 @@ void swap(task_t*, task_t*);
 int task_create(task_t* tasks, size_t num_tasks)
 {
 	size_t i;
-	task_t* best = NULL;
-	unsigned long tempT = 0, mintime = 0 ,maxtime = 0;
 	sorttasks(tasks, num_tasks);
 	runqueue_init();
-	for(i = 0; i<num_tasks; i++){
-		tempT = tasks[i].T;
-		if(tempT < mintime || mintime == 0){
-			mintime = tempT;
-			best = &tasks[i];
-		}
-		if(tempT > maxtime || maxtime == 0){
-			maxtime = tempT;
-		}
-	}
-	for(i = 0; i<num_tasks; i++){
-		runqueue_add(&system_tcb[i], (uint8_t)(1+((tasks[i].T-mintime)/(maxtime-mintime))*62)); //if something goes wrong DEBUG ME
-	}
-
+	for(i = 0; i<num_tasks; i++)
+		runqueue_add(&system_tcb[i], i+1);
 	sched_init(best);
 
 //should never get to this point
-  return 0; /* remove this line after adding your code */
+	return 0; /* remove this line after adding your code */
 }
 
 int event_wait(unsigned int dev)

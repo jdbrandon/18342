@@ -29,12 +29,15 @@ extern void idle(void);
 extern void sched_init(task_t*);
 extern void allocate_tasks(task_t**, size_t);
 extern void dispatch_sleep(void);
+void sorttasks(task_t*, size_t);
+void swap(task_t*, task_t*);
 
 int task_create(task_t* tasks, size_t num_tasks)
 {
 	size_t i;
 	task_t* best = NULL;
 	unsigned long tempT = 0, mintime = 0 ,maxtime = 0;
+	sorttasks(tasks, num_tasks);
 	runqueue_init();
 	for(i = 0; i<num_tasks; i++){
 		tempT = tasks[i].T;
@@ -70,4 +73,42 @@ void invalid_syscall(unsigned int call_num  __attribute__((unused)))
 
 	disable_interrupts();
 	while(1);
+}
+
+void sorttasks(task_t* tasks, size_t count){
+	size_t i, j, min = 0, minpos = 0;
+	task_t* list = tasks;	
+	for(i = 0; i < (count-1); i++){
+		min = tasks[i].T;
+		minpos = i;
+		for(j = 0; j < count; j++){
+			if(tasks[j].T < min){
+				min = tasks[j].T;
+				minpos = j;
+			}
+		}
+		if(i != minpos)
+			swap(&tasks[i], &tasks[minpos]);
+	}
+}
+
+void swap(task_t* a, task_t* b){
+	task_t tmp;
+	tmp.lambda = a->lambda;
+	tmp.data = a->data;
+	tmp.stack_pos = a->stack_pos;
+	tmp.C = a->C;
+	tmp.T = a->T;
+	
+	a->lambda = b->lambda;
+	a->data = b->data;
+	a->stack_pos = b->stack_pos;
+	a->C = b->C;
+	a->T = b->T;
+
+	b->lambda = tmp.lambda;
+	b->data = tmp.data;
+	b->stack_pos = tmp.stack_pos;
+	b->C = tmp.C;
+	b->T = tmp.T;
 }

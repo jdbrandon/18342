@@ -54,10 +54,14 @@ static void __attribute__((unused)) idle(void)
  * @param tasks  A list of scheduled task descriptors.
  * @param size   The number of tasks is the list.
  */
-void allocate_tasks(task_t** tasks  __attribute__((unused)), size_t num_tasks  __attribute__((unused)))
+void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
 	//divide up user stack
-
+	
 	//initialize kernel context (if any?)	
+	size_t i;
+	for(i = 0; i < num_tasks; i++){
+		ctx_init(tasks[i]->stack_pos, tasks[i]->lambda, tasks[i]->data, system_tcb[i+1].kstack_high);
+	}
 }
 

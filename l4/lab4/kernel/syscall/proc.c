@@ -37,9 +37,9 @@ int task_create(task_t* tasks, size_t num_tasks)
 	size_t i;
 	sorttasks(tasks, num_tasks);
 	runqueue_init();
-	for(i = 0; i<num_tasks; i++)
-		runqueue_add(&system_tcb[i], i+1);
-	sched_init(best);
+	for(i = 1; i<num_tasks; i++)
+		runqueue_add(&system_tcb[i], i);
+	sched_init(tasks);
 
 //should never get to this point
 	return 0; /* remove this line after adding your code */
@@ -63,7 +63,6 @@ void invalid_syscall(unsigned int call_num  __attribute__((unused)))
 
 void sorttasks(task_t* tasks, size_t count){
 	size_t i, j, min = 0, minpos = 0;
-	task_t* list = tasks;	
 	for(i = 0; i < (count-1); i++){
 		min = tasks[i].T;
 		minpos = i;

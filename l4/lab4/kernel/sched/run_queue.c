@@ -78,13 +78,9 @@ void runqueue_add(tcb_t* tcb, uint8_t prio)
 {
 	tcb->native_prio = prio;
 	
-	while(run_bits[prio/8] & (1 << (prio%8)))
-		prio++;
 	group_run_bits |= 1 << (prio/8);
 	run_bits[prio/8] |= 1 << (prio%8);
 
-	tcb->cur_prio = prio;
-	
 	run_list[prio] = tcb;
 }
 

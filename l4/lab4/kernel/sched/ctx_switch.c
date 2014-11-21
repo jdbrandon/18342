@@ -60,6 +60,7 @@ void dispatch_nosave(void)
 	uint8_t hprio = highest_prio();		//get highest priority num
 	tcb_t* htcb = &system_tcb[hprio];	//get highest priority tcb
 	ctx_switch_half(&htcb->context.r4);	//half context switch to new task
+	//set the svc stack pointer to 
 }
 
 

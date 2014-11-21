@@ -46,4 +46,4 @@ FUNC(ctx_switch_full)
 /*add your code to perform a half context switch */	
 FUNC(ctx_switch_half)
 	ldmia	r0, {r4-r11, sp, lr}
-	b	launch_task
+	mov	pc, lr	#should return to interrupt handler	

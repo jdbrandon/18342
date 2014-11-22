@@ -22,9 +22,11 @@ tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 void dev_init();
 void dev_update(unsigned long);
 void dotime(unsigned*);
+void init_timer(void);
 
 void sched_init(task_t* main_task)
 {
+	init_timer();
 	dev_init();
 	
 	//WHAT IS MAIN TASK USED FOR?!

@@ -81,11 +81,7 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 		puts("SWI_VEC has bad value!\n");
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
-
-	init_timer(); //DISABLED FOR TROUBLESHOOTING
-	/* init scheduler */
-
-	/* init other stuff? */
+	/* init other stuff */
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	/* should never get here */
 	restore_old_handlers(swiaddr, irqaddr);
@@ -105,7 +101,7 @@ void init_timer(){
         mmio_t iclr = (mmio_t)ICLR;
 	start_time = *oscr;
 	rollovercount = 0;
-	*osmr0 = *oscr+3686400;
+	*osmr0 = *oscr+OSTMR_FREQ/100;
         *oier |= 0x1;
         *icmr |= 0x04000000;
         *iclr = 0x0;

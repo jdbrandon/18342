@@ -46,8 +46,9 @@ int mutex_create(void)
 			enable_interrupts();
 			return i;
 		}
-	//set errno??
-	return -1;
+	enable_interrupts();
+	
+	return -ENOMEM;
 }
 
 int mutex_lock(int mutex)
@@ -56,6 +57,10 @@ int mutex_lock(int mutex)
 	tcb_t* temp_q, * cur_tcb;
 	disable_interrupts();
 	tmp = gtMutex[mutex];
+	if(tmp.bAvailable)
+		return EINVAL;
+	if(tmp.pHolding_Tcb == get_cur_tcb())
+		return EDEADLOCK;
 	if(tmp.bLock){
 		//add to sleep queue
 		temp_q = tmp.pSleep_queue;
@@ -90,6 +95,11 @@ int mutex_unlock(int mutex)
 	mutex_t tmp;
 	tcb_t* cur_tcb;
 	disable_interrupts();
+	tmp = gtMutex[mutex];
+	if(tmp.bAvailable)
+		return EINVAL;
+	if(tmp.pHolding_Tcb != get_cur_tcb())
+		return EPERM;
 	cur_tcb = get_cur_tcb();
 	cur_tcb->holds_lock = holds_other_lock(cur_tcb, mutex);
 	if(!cur_tcb->holds_lock){
@@ -97,7 +107,6 @@ int mutex_unlock(int mutex)
 		runqueue_remove(0);
 		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 	}
-	tmp = gtMutex[mutex];
 	if(tmp.pSleep_queue == NULL){
 		tmp.bLock = 0;
 	} else {
@@ -114,10 +123,12 @@ int mutex_unlock(int mutex)
 int holds_other_lock(tcb_t* tcb, int mtx){
 	int i;
 	for(i=0; i<OS_NUM_MUTEX; i++){
-		if(i == mtx) 
+		if(i == mtx){ 
 			continue;
-		if(gtMutex[i].pHolding_Tcb == tcb)
+		}
+		if(gtMutex[i].pHolding_Tcb == tcb){
 			return 1;
+		}
 	}
 	return 0;
 }

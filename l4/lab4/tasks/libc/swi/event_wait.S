@@ -14,5 +14,9 @@
 	.global event_wait
 
 FUNC(event_wait)
+	push {r4,lr}
+	mov r4, sp
 	swi EVENT_WAIT
+	mov sp, r4
+	pop {r4,lr}
 	mov pc, lr

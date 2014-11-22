@@ -52,10 +52,11 @@ int main(int argc, char** argv)
 	tasks[1].C = 1;
 	tasks[1].T = PERIOD_DEV1;
 
+	puts("launching create tasks..\n");
 	task_create(tasks, 2);
 	argc=argc; /* remove compiler warning */
 	argv[0]=argv[0]; /* remove compiler warning */
 
-	puts("Why did your code get here!\n");
+	puts("Why did YOUR code get here!\n");
 	return 0;
 }

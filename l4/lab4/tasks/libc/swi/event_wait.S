@@ -7,8 +7,11 @@
  */
 
 #include <asm.h>
+#include <bits/swi.h>
 
 	.file "event_wait.S"
+	.align 2
+	.global event_wait
 
 FUNC(event_wait)
-	@ Add code here.  Put your name at the top.
+	swi EVENT_WAIT

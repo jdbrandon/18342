@@ -19,16 +19,18 @@
 #include <arm/physmem.h>
 
 tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
-
+void dev_init();
 
 void sched_init(task_t* main_task)
 {
+	puts("initting sched...\n");
+	dev_init();
 	
-	
-	//set the timer for the next interrupt
-	//HOW?!?!?!? Devices...?
-	//run the main_task	
-	main_task->lambda(main_task->data);
+	//WHAT IS MAIN TASK USED FOR?!
+	main_task = main_task;
+
+	/*what needs to happen is the sp must be changed to the main_tasks kernel sp, something needs to load r4, r5, and r6 with lambda, user data, and user stack respectively. That way launch task can put it into user mode*/
+	dispatch_nosave(); //this will load r4, r5, and r6 from highest priority tcb and return to launch_task() 
 }
 
 /**
@@ -56,6 +58,7 @@ static void __attribute__((unused)) idle(void)
  */
 void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
+	puts("allocating tasks...\n");
 	//divide up user stack
 	
 	//initialize kernel context (if any?)	

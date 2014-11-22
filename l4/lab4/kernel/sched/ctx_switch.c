@@ -45,7 +45,8 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
 void dispatch_save(void)
 {
 	uint8_t hprio = highest_prio(); 			//get highest priority num
-	tcb_t* htcb = &system_tcb[hprio]; 			//get highest priority tcb
+	tcb_t* htcb = &system_tcb[hprio-1]; //run_list[hprio]; 			//get highest priority tcb
+	cur_tcb = htcb;
 	ctx_switch_full(&htcb->context.r4, &cur_tcb->context.r4); 	//full context switch to new task
 }
 
@@ -58,8 +59,13 @@ void dispatch_save(void)
 void dispatch_nosave(void)
 {
 	uint8_t hprio = highest_prio();		//get highest priority num
-	tcb_t* htcb = &system_tcb[hprio];	//get highest priority tcb
+	tcb_t* htcb = &system_tcb[hprio-1]; //run_list[hprio];	//get highest priority tcb
+	printf("hprio: %d\n",hprio);
+	printf("htcb: %d\n",(uint32_t)htcb);
+	puts("setting context...\n");
+	cur_tcb = htcb;
 	ctx_switch_half(&htcb->context.r4);	//half context switch to new task
+
 }
 
 

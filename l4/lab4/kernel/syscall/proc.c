@@ -34,12 +34,24 @@ void swap(task_t*, task_t*);
 
 int task_create(task_t* tasks, size_t num_tasks)
 {
+	if(num_tasks > OS_MAX_TASKS){
+		return EINVAL;
+	}
+	puts("creating tasks...\n");
 	size_t i;
 	sorttasks(tasks, num_tasks);
 	runqueue_init();
-	for(i = 1; i<num_tasks; i++)
-		runqueue_add(&system_tcb[i], i);
-	sched_init(tasks);
+	for(i = 0; i<num_tasks; i++){
+		runqueue_add(&system_tcb[i], i+1);
+		printf("tcb%d: %d\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
+		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;
+		system_tcb[i].context.r5 = (uint32_t)tasks[i].data;
+		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
+		system_tcb[i].context.sp = &system_tcb[i].kstack_high[0];
+		system_tcb[i].context.lr = launch_task;
+}
+//	allocate_tasks(&tasks, num_tasks); //i still dont know what this does...
+	sched_init(&tasks[0]);
 
 //should never get to this point
 	return 0; /* remove this line after adding your code */
@@ -47,6 +59,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 
 int event_wait(unsigned int dev)
 {
+	puts("event waiting...\n");
 	dev_wait(dev);
 	dispatch_sleep();
   return 1; /* remove this line after adding your code */	

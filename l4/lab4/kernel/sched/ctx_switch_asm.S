@@ -35,6 +35,7 @@ FUNC(ctx_init)
 	mrs      r0, spsr
 	stmfd    sp, {r0, sp, lr}^
 	add      sp, sp, #-12
+	mov	 pc, lr
 
 /**
  * @brief Special exit routine from the scheduler that launches a task for the
@@ -67,4 +68,4 @@ FUNC(ctx_switch_full)
 /*add your code to perform a half context switch */	
 FUNC(ctx_switch_half)
 	ldmia	r0, {r4-r11, sp, lr}
-	mov	pc, lr	@should return to interrupt handler	
+	mov	pc, lr	@should return to dispatcher	

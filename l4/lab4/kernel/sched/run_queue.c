@@ -117,3 +117,8 @@ uint8_t highest_prio(void)
 	bit = prio_unmap_table[run_bits[grp]];
 	return (8 * grp) + bit;
 }
+
+tcb_t* highest_tcb(void)
+{
+	return run_list[highest_prio()];
+}

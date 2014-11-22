@@ -19,6 +19,7 @@
 #endif
 
 static tcb_t* cur_tcb; /* use this if needed */
+tcb_t* highest_tcb(void);
 
 /**
  * @brief Initialize the current TCB and priority.
@@ -59,7 +60,7 @@ void dispatch_save(void)
 void dispatch_nosave(void)
 {
 	uint8_t hprio = highest_prio();		//get highest priority num
-	tcb_t* htcb = &system_tcb[hprio-1]; //run_list[hprio];	//get highest priority tcb
+	tcb_t* htcb = highest_tcb(); //run_list[hprio];	//get highest priority tcb
 	printf("hprio: %d\n",hprio);
 	printf("htcb: %d\n",(uint32_t)htcb);
 	puts("setting context...\n");
@@ -77,8 +78,9 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
-	uint8_t hprio = highest_prio(); 			//get highest priority num
-	tcb_t* htcb = &system_tcb[hprio]; 			//get highest priority tcb
+	//uint8_t hprio = highest_prio(); 			//get highest priority num
+	tcb_t* htcb = highest_tcb(); //&system_tcb[hprio-1]; 			//get highest priority tcb
+	cur_tcb = htcb;
 	ctx_switch_full(&htcb->context.r4, &cur_tcb->context.r4); 	//full context switch to new task
 	
 }

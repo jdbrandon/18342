@@ -68,6 +68,7 @@ void dev_wait(unsigned int dev)
 		temp = temp->sleep_queue;
 	}
 	temp->sleep_queue = ctcb;
+	ctcb->sleep_queue = NULL;
 }
 
 

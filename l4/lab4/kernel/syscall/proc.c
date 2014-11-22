@@ -43,7 +43,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 	runqueue_init();
 	for(i = 0; i<num_tasks; i++){
 		runqueue_add(&system_tcb[i], i+1);
-		printf("tcb%d: %d\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
+		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
 		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;
 		system_tcb[i].context.r5 = (uint32_t)tasks[i].data;
 		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
@@ -62,7 +62,8 @@ int event_wait(unsigned int dev)
 	puts("event waiting...\n");
 	dev_wait(dev);
 	dispatch_sleep();
-  return 1; /* remove this line after adding your code */	
+	while(1);
+  	return 1; /* remove this line after adding your code */	
 }
 
 /* An invalid syscall causes the kernel to exit. */

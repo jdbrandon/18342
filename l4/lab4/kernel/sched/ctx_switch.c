@@ -46,8 +46,11 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
 void dispatch_save(void)
 {
 	tcb_t* htcb = highest_tcb();			//get highest priority tcb
-	//printf("htcb: %x\n", (uint32_t)htcb);
-	//printf("ctcb: %x\n", (uint32_t)cur_tcb);
+	if(cur_tcb == &system_tcb[63]){
+		dispatch_nosave();
+	}
+//	printf("htcb: %x\n", (uint32_t)htcb);
+//	printf("ctcb: %x\n", (uint32_t)cur_tcb);
 	if(cur_tcb != htcb){
 		tcb_t* temp = cur_tcb;
 		cur_tcb = htcb;
@@ -64,8 +67,8 @@ void dispatch_save(void)
 void dispatch_nosave(void)
 {
 	tcb_t* htcb = highest_tcb(); //run_list[hprio];	//get highest priority tcb
-	//printf("htcb: %x\n",(uint32_t)htcb);
-	//printf("htcblr: %x\n",(uint32_t)htcb->context.lr);
+//	printf("htcb: %x\n",(uint32_t)htcb);
+//	printf("htcblr: %x\n",(uint32_t)htcb->context.lr);
 	//puts("setting context...\n");
 	cur_tcb = htcb;
 	ctx_switch_half(&htcb->context.r4);	//half context switch to new task
@@ -80,13 +83,15 @@ void dispatch_nosave(void)
  */
 void dispatch_sleep(void)
 {
-	//uint8_t hprio = highest_prio(); 			//get highest priority num
-	tcb_t* htcb = highest_tcb(); //&system_tcb[hprio-1]; 	//get highest priority tcb
+	tcb_t* htcb = highest_tcb(); 	//get highest priority tcb
 	tcb_t* temp = cur_tcb;
+	if(cur_tcb == &system_tcb[63]){
+		dispatch_nosave();
+	}
 	cur_tcb = htcb;
-	//printf("htcb: %x\n",(uint32_t)htcb);
-	//printf("htcblr: %x\n",(uint32_t)htcb->context.lr);
-	//printf("temp: %x\n",(uint32_t)temp);
+//	printf("htcb: %x\n",(uint32_t)htcb);
+//	printf("htcblr: %x\n",(uint32_t)htcb->context.lr);
+//	printf("temp: %x\n",(uint32_t)temp);
 	ctx_switch_full(&htcb->context.r4, &temp->context.r4); 	//full context switch to new task
 }
 

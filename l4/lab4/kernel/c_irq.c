@@ -31,12 +31,13 @@ void c_irq_handler(){
 	mmio_t ossr = (mmio_t)OSSR;
 	mmio_t osmr0 = (mmio_t)OSMR_0;
 	if(*ossr & OSSR_M0){
+//		puts(" int ");
 		if(lastoscr<start_time && *oscr>=start_time){
 			rollovercount++;
 		}
 		lastoscr = *oscr;
 		dotime(&stamp);
-		*osmr0 += OSTMR_FREQ/100;
+		*osmr0 = *oscr + OSTMR_FREQ/100;
 		*ossr |= OSSR_M0;
 	//	printf("int: %lu\n", (unsigned long)stamp);
 		dev_update((unsigned long)stamp);

@@ -40,8 +40,8 @@ void sched_init(task_t* main_task)
  
 static void idle(void)
 {
-	 enable_interrupts();
-	 while(1);
+	enable_interrupts();
+	while(1);
 }
 void* get_idle(){
 	return (void*)idle;

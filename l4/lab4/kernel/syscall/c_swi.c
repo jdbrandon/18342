@@ -15,7 +15,9 @@
 #include <exports.h>
 #include <const.h>
 #include <arm/timer.h>
+#include <arm/psr.h>
 #include <arm/interrupt.h>
+#include <arm/exception.h>
 
 void doread(unsigned*, unsigned*);
 void dowrite(unsigned*, unsigned*);
@@ -58,7 +60,9 @@ void c_swi_handler(int swi_num, unsigned *args){
 		task_create(args[0], args[1]);
 		break;
 	case EVENT_WAIT:
+		disable_interrupts();
 		*args = event_wait(args[0]);
+		enable_interrupts();
 		break;
 	default:
 		*args = -0xbadc0de;

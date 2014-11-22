@@ -22,7 +22,7 @@ void dowrite(unsigned*, unsigned*);
 void dosleep(unsigned*);
 void dotime(unsigned*);
 void task_create(unsigned, unsigned);
-void event_wait(unsigned);
+int event_wait(unsigned);
 
 /* global variables */
 extern unsigned lr_k; 		//store value of kernel link register  
@@ -58,7 +58,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 		task_create(args[0], args[1]);
 		break;
 	case EVENT_WAIT:
-		event_wait(args[0]);
+		*args = event_wait(args[0]);
 		break;
 	default:
 		*args = -0xbadc0de;

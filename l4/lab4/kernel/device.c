@@ -28,6 +28,7 @@
  * There is a wait queue for every device which contains the tcbs of
  * all tasks waiting on the device event to occur.
  */
+void dotime(unsigned*);
 
 struct dev
 {
@@ -46,9 +47,11 @@ static dev_t devices[NUM_DEVICES];
 void dev_init(void)
 {
 	//WHAT DOES INITIALIZE THE SLEEP QUEUE MEAN?
+	unsigned stamp;
+	dotime(&stamp);
 	int i;
 	for(i=0; i < NUM_DEVICES; i++){		//for every device, set the first timeout for the first period
-		devices[i].next_match = dev_freq[i];
+		devices[i].next_match = (unsigned long)stamp + dev_freq[i];
 	}	
 }
 
@@ -64,10 +67,14 @@ void dev_wait(unsigned int dev)
 	tcb_t* ctcb = get_cur_tcb();
 	runqueue_remove(ctcb->cur_prio);
 	tcb_t* temp = devices[dev].sleep_queue;
-	while(temp->sleep_queue != NULL){
-		temp = temp->sleep_queue;
+	if(temp == NULL){
+		devices[dev].sleep_queue = ctcb;
+	}else{
+		while(temp->sleep_queue != NULL){
+			temp = temp->sleep_queue;
+		}
+		temp->sleep_queue = ctcb;
 	}
-	temp->sleep_queue = ctcb;
 	ctcb->sleep_queue = NULL;
 }
 
@@ -84,12 +91,15 @@ void dev_update(unsigned long millis)
 	//query all devices to see if millis is more than next match
 	int i;
 	tcb_t* current;
+	printf("updating devs... with %lu\n", millis);
 	for(i=0; i < NUM_DEVICES; i++){
+		printf("dev%d: %lu\n", i, devices[i].next_match);
 		if(devices[i].next_match < millis){
-			do{
-				current = devices[i].sleep_queue;
+			current = devices[i].sleep_queue;
+			while(current != NULL){
 				runqueue_add(current, current->cur_prio);
-			}while(current->sleep_queue != NULL);
+				current = current->sleep_queue;
+			}
 			devices[i].next_match += dev_freq[i];
 			devices[i].sleep_queue = NULL;
 		}

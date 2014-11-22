@@ -14,11 +14,12 @@
 #include <arm/timer.h>
 
 void dev_update(unsigned long);
+void dispatch_save();
 void dotime(unsigned*);
 
 extern volatile unsigned rollovercount;
 extern volatile unsigned start_time;
-static unsigned lastoscr = 0;
+static unsigned lastoscr = 0xffffffff; //initialize to highest value to avoid initial increment before it is set correctly
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.
@@ -35,9 +36,11 @@ void c_irq_handler(){
 		}
 		lastoscr = *oscr;
 		dotime(&stamp);
-		dev_update(stamp);
-		*osmr0 += OSTMR_FREQ/100;
+		*osmr0 += OSTMR_FREQ; ///100;
 		*ossr |= OSSR_M0;
+		printf("int: %lu\n", (unsigned long)stamp);
+		dev_update((unsigned long)stamp);
+		dispatch_save();
 	}
 	if(*ossr & OSSR_M1)
 		*ossr |= OSSR_M1;

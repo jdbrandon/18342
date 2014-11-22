@@ -82,7 +82,7 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
 
-	//init_timer(); //DISABLED FOR TROUBLESHOOTING
+	init_timer(); //DISABLED FOR TROUBLESHOOTING
 	/* init scheduler */
 
 	/* init other stuff? */
@@ -105,7 +105,7 @@ void init_timer(){
         mmio_t iclr = (mmio_t)ICLR;
 	start_time = *oscr;
 	rollovercount = 0;
-	*osmr0 = *oscr+36864;
+	*osmr0 = *oscr+3686400;
         *oier |= 0x1;
         *icmr |= 0x04000000;
         *iclr = 0x0;

@@ -25,7 +25,7 @@
 extern tcb_t system_tcb[OS_MAX_TASKS];
 extern void runqueue_init(void);
 extern void runqueue_add(tcb_t*, uint8_t);
-extern void idle(void);
+extern void* get_idle(void);
 extern void sched_init(task_t*);
 extern void allocate_tasks(task_t**, size_t);
 extern void dispatch_sleep(void);
@@ -49,7 +49,14 @@ int task_create(task_t* tasks, size_t num_tasks)
 		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
 		system_tcb[i].context.sp = &system_tcb[i].kstack_high[0];
 		system_tcb[i].context.lr = launch_task;
-}
+	}
+	runqueue_add(&system_tcb[63], 63);
+	printf("tcb%d: %x\n", (uint32_t)63, (uint32_t)&system_tcb[63]);
+	system_tcb[63].context.r4 = (uint32_t)get_idle();
+	system_tcb[63].context.r5 = (uint32_t)0;
+	system_tcb[63].context.r6 = (uint32_t)&system_tcb[63].kstack[128];
+	system_tcb[63].context.sp = &system_tcb[63].kstack_high[0];
+	system_tcb[63].context.lr = launch_task;
 //	allocate_tasks(&tasks, num_tasks); //i still dont know what this does...
 	sched_init(&tasks[0]);
 
@@ -62,8 +69,7 @@ int event_wait(unsigned int dev)
 	puts("event waiting...\n");
 	dev_wait(dev);
 	dispatch_sleep();
-	while(1);
-  	return 1; /* remove this line after adding your code */	
+  	return 0; /* remove this line after adding your code */	
 }
 
 /* An invalid syscall causes the kernel to exit. */

@@ -15,3 +15,4 @@
 
 FUNC(event_wait)
 	swi EVENT_WAIT
+	mov pc, lr

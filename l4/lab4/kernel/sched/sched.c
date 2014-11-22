@@ -20,6 +20,8 @@
 
 tcb_t system_tcb[OS_MAX_TASKS]; /*allocate memory for system TCBs */
 void dev_init();
+void dev_update(unsigned long);
+void dotime(unsigned*);
 
 void sched_init(task_t* main_task)
 {
@@ -37,10 +39,17 @@ void sched_init(task_t* main_task)
  * @brief This is the idle task that the system runs when no other task is runnable
  */
  
-static void __attribute__((unused)) idle(void)
+static void idle(void)
 {
 	 enable_interrupts();
-	 while(1);
+	 while(1){
+//		unsigned stamp;
+//		dotime(&stamp);
+//		dev_update((unsigned long)stamp);
+	 }
+}
+void* get_idle(){
+	return (void*)idle;
 }
 
 /**

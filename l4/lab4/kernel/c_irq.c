@@ -36,9 +36,9 @@ void c_irq_handler(){
 		}
 		lastoscr = *oscr;
 		dotime(&stamp);
-		*osmr0 += OSTMR_FREQ; ///100;
+		*osmr0 += OSTMR_FREQ/100;
 		*ossr |= OSSR_M0;
-		printf("int: %lu\n", (unsigned long)stamp);
+	//	printf("int: %lu\n", (unsigned long)stamp);
 		dev_update((unsigned long)stamp);
 		dispatch_save();
 	}

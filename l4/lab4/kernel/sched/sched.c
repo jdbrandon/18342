@@ -25,7 +25,6 @@ void dotime(unsigned*);
 
 void sched_init(task_t* main_task)
 {
-	puts("initting sched...\n");
 	dev_init();
 	
 	//WHAT IS MAIN TASK USED FOR?!
@@ -42,11 +41,7 @@ void sched_init(task_t* main_task)
 static void idle(void)
 {
 	 enable_interrupts();
-	 while(1){
-//		unsigned stamp;
-//		dotime(&stamp);
-//		dev_update((unsigned long)stamp);
-	 }
+	 while(1);
 }
 void* get_idle(){
 	return (void*)idle;
@@ -67,7 +62,6 @@ void* get_idle(){
  */
 void allocate_tasks(task_t** tasks, size_t num_tasks)
 {
-	puts("allocating tasks...\n");
 	//divide up user stack
 	
 	//initialize kernel context (if any?)	

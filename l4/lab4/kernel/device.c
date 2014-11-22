@@ -91,9 +91,9 @@ void dev_update(unsigned long millis)
 	//query all devices to see if millis is more than next match
 	int i;
 	tcb_t* current;
-	printf("updating devs... with %lu\n", millis);
+//	printf("updating devs... with %lu\n", millis);
 	for(i=0; i < NUM_DEVICES; i++){
-		printf("dev%d: %lu\n", i, devices[i].next_match);
+//		printf("dev%d: %lu\n", i, devices[i].next_match);
 		if(devices[i].next_match < millis){
 			current = devices[i].sleep_queue;
 			while(current != NULL){

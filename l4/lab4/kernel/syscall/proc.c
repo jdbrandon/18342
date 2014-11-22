@@ -37,7 +37,6 @@ int task_create(task_t* tasks, size_t num_tasks)
 	if(num_tasks > OS_MAX_TASKS){
 		return EINVAL;
 	}
-	puts("creating tasks...\n");
 	size_t i;
 	sorttasks(tasks, num_tasks);
 	runqueue_init();
@@ -66,7 +65,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 
 int event_wait(unsigned int dev)
 {
-	puts("event waiting...\n");
+	//puts("event waiting...\n");
 	dev_wait(dev);
 	dispatch_sleep();
   	return 0; /* remove this line after adding your code */	

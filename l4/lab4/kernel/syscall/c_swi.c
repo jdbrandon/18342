@@ -23,7 +23,7 @@ void doread(unsigned*, unsigned*);
 void dowrite(unsigned*, unsigned*);
 void dosleep(unsigned*);
 void dotime(unsigned*);
-void task_create(unsigned, unsigned);
+int task_create(unsigned, unsigned);
 int event_wait(unsigned);
 
 /* global variables */
@@ -57,7 +57,7 @@ void c_swi_handler(int swi_num, unsigned *args){
 		break;
 	case CREATE_SWI:
 		/*do create*/
-		task_create(args[0], args[1]);
+		*args = task_create(args[0], args[1]);
 		break;
 	case EVENT_WAIT:
 		disable_interrupts();

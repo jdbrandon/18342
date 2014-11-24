@@ -58,7 +58,7 @@ int mutex_lock(int mutex)
 	disable_interrupts();
 	tmp = gtMutex[mutex];
 	if(tmp.bAvailable)
-		return EINVAL;
+		return -EINVAL;
 	if(tmp.pHolding_Tcb == get_cur_tcb())
 		return EDEADLOCK;
 	if(tmp.bLock){
@@ -97,9 +97,9 @@ int mutex_unlock(int mutex)
 	disable_interrupts();
 	tmp = gtMutex[mutex];
 	if(tmp.bAvailable)
-		return EINVAL;
+		return -EINVAL;
 	if(tmp.pHolding_Tcb != get_cur_tcb())
-		return EPERM;
+		return -EPERM;
 	cur_tcb = get_cur_tcb();
 	cur_tcb->holds_lock = holds_other_lock(cur_tcb, mutex);
 	if(!cur_tcb->holds_lock){

@@ -23,5 +23,8 @@ ssize_t write(int fd, const void *buf, size_t count);
 unsigned long time(void);
 void sleep(unsigned long millis);
 int event_wait(unsigned int dev);
+int mutex_create(void);
+int mutex_lock(int);
+int mutex_unlock(int);
 
 #endif /* UNISTD_H */

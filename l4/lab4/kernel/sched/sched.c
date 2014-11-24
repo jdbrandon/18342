@@ -30,6 +30,7 @@ void sched_init(task_t* main_task)
 	dev_init();
 	
 	//WHAT IS MAIN TASK USED FOR?!
+	//quiet compiler errors
 	main_task = main_task;
 
 	/*what needs to happen is the sp must be changed to the main_tasks kernel sp, something needs to load r4, r5, and r6 with lambda, user data, and user stack respectively. That way launch task can put it into user mode*/
@@ -62,14 +63,26 @@ void* get_idle(){
  * @param tasks  A list of scheduled task descriptors.
  * @param size   The number of tasks is the list.
  */
-void allocate_tasks(task_t** tasks, size_t num_tasks)
+void allocate_tasks(task_t** tasks_args, size_t num_tasks)
 {
-	//divide up user stack
-	
-	//initialize kernel context (if any?)	
-	size_t i;
-	for(i = 0; i < num_tasks; i++){
-		ctx_init(tasks[i]->stack_pos, tasks[i]->lambda, tasks[i]->data, system_tcb[i+1].kstack_high);
+	runqueue_init();
+	unsigned i;
+	task_t* tasks;
+	tasks = *tasks_args;
+	for(i = 0; i<num_tasks; i++){
+		runqueue_add(&system_tcb[i], i+1);
+		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;
+		system_tcb[i].context.r5 = (uint32_t)tasks[i].data;
+		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
+		system_tcb[i].context.sp = &system_tcb[i].kstack_high[0];
+		system_tcb[i].context.lr = launch_task;
 	}
+	runqueue_add(&system_tcb[IDLE_PRIO], IDLE_PRIO);
+	system_tcb[IDLE_PRIO].context.r4 = (uint32_t)get_idle();
+	system_tcb[IDLE_PRIO].context.r5 = (uint32_t)0;
+	system_tcb[IDLE_PRIO].context.r6 = (uint32_t)&system_tcb[IDLE_PRIO].kstack[128];
+	system_tcb[IDLE_PRIO].context.sp = &system_tcb[IDLE_PRIO].kstack_high[0];
+	system_tcb[IDLE_PRIO].context.lr = launch_task;
+	sched_init(&tasks[0]);
 }
 

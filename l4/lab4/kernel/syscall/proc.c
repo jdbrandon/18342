@@ -39,7 +39,6 @@ int task_create(task_t* tasks, size_t num_tasks)
 	}
 	size_t i;
 	sorttasks(tasks, num_tasks);
-	runqueue_init();
 	for(i = 0; i<num_tasks; i++){
 		if((uint32_t)tasks[i].stack_pos > 0xa2ffffff || 
 			(uint32_t)tasks[i].stack_pos < 0xa0000000 || 
@@ -47,25 +46,10 @@ int task_create(task_t* tasks, size_t num_tasks)
 			(uint32_t)tasks[i].lambda < 0xa0000000){  
 				return -EFAULT;
 		}
-		runqueue_add(&system_tcb[i], i+1);
-//		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
-		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;
-		system_tcb[i].context.r5 = (uint32_t)tasks[i].data;
-		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
-		system_tcb[i].context.sp = &system_tcb[i].kstack_high[0];
-		system_tcb[i].context.lr = launch_task;
 	}
-	runqueue_add(&system_tcb[63], 63);
-//	printf("tcb%d: %x\n", (uint32_t)63, (uint32_t)&system_tcb[63]);
-	system_tcb[63].context.r4 = (uint32_t)get_idle();
-	system_tcb[63].context.r5 = (uint32_t)0;
-	system_tcb[63].context.r6 = (uint32_t)&system_tcb[63].kstack[128];
-	system_tcb[63].context.sp = &system_tcb[63].kstack_high[0];
-	system_tcb[63].context.lr = launch_task;
-//	allocate_tasks(&tasks, num_tasks); //i still dont know what this does...
-	sched_init(&tasks[0]);
+	allocate_tasks(&tasks, num_tasks);
 
-//should never get to this point
+	//should never get to this point
 	return 0; /* remove this line after adding your code */
 }
 

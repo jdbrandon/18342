@@ -77,7 +77,7 @@ int mutex_lock(int mutex)
 		}
 		runqueue_remove(get_cur_tcb()->cur_prio);
 		enable_interrupts();
-		dispatch_sleep();
+		//dispatch_sleep();
 		//revoke control of cpu from current process
 		//until the mutex is avaialble.	
 	} else {
@@ -95,13 +95,13 @@ int mutex_lock(int mutex)
 int mutex_unlock(int mutex)
 {
 	int holds_other_lock(tcb_t*, int);
-	mutex_t tmp;
+	mutex_t* tmp;
 	tcb_t* cur_tcb;
 	disable_interrupts();
-	tmp = gtMutex[mutex];
-	if(tmp.bAvailable || mutex > OS_NUM_MUTEX || mutex < 0)
+	tmp = &gtMutex[mutex];
+	if(tmp->bAvailable || mutex > OS_NUM_MUTEX || mutex < 0)
 		return -EINVAL;
-	if(tmp.pHolding_Tcb != get_cur_tcb())
+	if(tmp->pHolding_Tcb != get_cur_tcb())
 		return -EPERM;
 	cur_tcb = get_cur_tcb();
 	cur_tcb->holds_lock = holds_other_lock(cur_tcb, mutex);
@@ -110,13 +110,14 @@ int mutex_unlock(int mutex)
 		runqueue_remove(0);
 		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 	}
-	if(tmp.pSleep_queue == NULL){
-		tmp.bLock = 0;
+	if(tmp->pSleep_queue == NULL){
+		tmp->pHolding_Tcb = NULL;
+		tmp->bLock = 0;
 	} else {
-		tmp.pHolding_Tcb = tmp.pSleep_queue;
-		tmp.pSleep_queue = tmp.pSleep_queue->sleep_queue;
-		tmp.pHolding_Tcb->cur_prio = 0;
-		runqueue_add(tmp.pHolding_Tcb, 0);
+		tmp->pHolding_Tcb = tmp->pSleep_queue;
+		tmp->pSleep_queue = tmp->pSleep_queue->sleep_queue;
+		tmp->pHolding_Tcb->cur_prio = 0;
+		runqueue_add(tmp->pHolding_Tcb, 0);
 	}
 	enable_interrupts();
 	//dispatch_save();

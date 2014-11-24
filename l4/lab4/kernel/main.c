@@ -42,6 +42,7 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 /* function declarations */
 unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
 void start_timer();
+void mutex_init();
 void init_sched();
 
 /* global variables */
@@ -82,6 +83,7 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
 	init_timer();
+	mutex_init();
 	/* init other stuff */
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	/* should never get here */

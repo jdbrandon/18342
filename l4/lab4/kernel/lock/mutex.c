@@ -68,15 +68,20 @@ int mutex_lock(int mutex)
 			temp_q->sleep_queue = get_cur_tcb();
 			temp_q->sleep_queue->sleep_queue = NULL;
 		}
+		runqueue_remove(get_cur_tcb()->cur_prio);
+		enable_interrupts();
+		dispatch_sleep();
 		//revoke control of cpu from current process
 		//until the mutex is avaialble.	
 	} else {
 		tmp.bLock = 1;
 		cur_tcb = get_cur_tcb();
 		cur_tcb->holds_lock = 1;
+		cur_tcb->cur_prio = 0;
+		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 	}
 	enable_interrupts();
-	return 1; // fix this to return the correct value
+	return 0; // fix this to return the correct value
 }
 
 int mutex_unlock(int mutex)
@@ -87,17 +92,23 @@ int mutex_unlock(int mutex)
 	disable_interrupts();
 	cur_tcb = get_cur_tcb();
 	cur_tcb->holds_lock = holds_other_lock(cur_tcb, mutex);
+	if(!cur_tcb->holds_lock){
+		cur_tcb->cur_prio = cur_tcb->native_prio;
+		runqueue_remove(0);
+		runqueue_add(cur_tcb, cur_tcb->cur_prio);
+	}
 	tmp = gtMutex[mutex];
 	if(tmp.pSleep_queue == NULL){
 		tmp.bLock = 0;
 	} else {
 		tmp.pHolding_Tcb = tmp.pSleep_queue;
 		tmp.pSleep_queue = tmp.pSleep_queue->sleep_queue;
-		//allocate cpu to task that was removed from the 
-		//sleep queue.
+		tmp.pHolding_Tcb->cur_prio = 0;
+		runqueue_add(tmp.pHolding_Tcb, 0);
 	}
 	enable_interrupts();
-	return 1; // fix this to return the correct value
+	dispatch_save();
+	return 0;
 }
 
 int holds_other_lock(tcb_t* tcb, int mtx){

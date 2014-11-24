@@ -48,7 +48,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 				return EFAULT;
 		}
 		runqueue_add(&system_tcb[i], i+1);
-		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
+//		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
 		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;
 		system_tcb[i].context.r5 = (uint32_t)tasks[i].data;
 		system_tcb[i].context.r6 = (uint32_t)tasks[i].stack_pos;
@@ -56,7 +56,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 		system_tcb[i].context.lr = launch_task;
 	}
 	runqueue_add(&system_tcb[63], 63);
-	printf("tcb%d: %x\n", (uint32_t)63, (uint32_t)&system_tcb[63]);
+//	printf("tcb%d: %x\n", (uint32_t)63, (uint32_t)&system_tcb[63]);
 	system_tcb[63].context.r4 = (uint32_t)get_idle();
 	system_tcb[63].context.r5 = (uint32_t)0;
 	system_tcb[63].context.r6 = (uint32_t)&system_tcb[63].kstack[128];

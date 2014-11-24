@@ -41,7 +41,7 @@ extern int user_mode(int, char*[], unsigned*, unsigned*);
 
 /* function declarations */
 unsigned *install_handler(int, interrupt_handler_t, unsigned*, unsigned*);
-void init_timer();
+void start_timer();
 void init_sched();
 
 /* global variables */
@@ -81,6 +81,7 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 		puts("SWI_VEC has bad value!\n");
 	if(irqaddr == ERROR_CASE)
 		puts("IRQ_VEC has bad value!\n");
+	init_timer();
 	/* init other stuff */
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	/* should never get here */
@@ -94,13 +95,17 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
       up by setting OSMR0, OIER, ICMR, and ICLR to appropriate values.
 */
 void init_timer(){
+        mmio_t oscr = (mmio_t)OSCR;
+	start_time = *oscr;
+	rollovercount = 0;
+}
+
+void start_timer(){
 	mmio_t osmr0 = (mmio_t)OSMR_0;
         mmio_t oier = (mmio_t)OIER;
         mmio_t oscr = (mmio_t)OSCR;
         mmio_t icmr = (mmio_t)ICMR;
         mmio_t iclr = (mmio_t)ICLR;
-	start_time = *oscr;
-	rollovercount = 0;
 	*osmr0 = *oscr+OSTMR_FREQ/100;
         *oier |= 0x1;
         *icmr |= 0x04000000;

@@ -47,8 +47,8 @@ int mutex_create(void)
 			return i;
 		}
 	enable_interrupts();
-	//set errno??
-	return -1;
+	
+	return -ENOMEM;
 }
 
 int mutex_lock(int mutex)
@@ -57,6 +57,10 @@ int mutex_lock(int mutex)
 	tcb_t* temp_q, * cur_tcb;
 	disable_interrupts();
 	tmp = gtMutex[mutex];
+	if(tmp.bAvailable)
+		return EINVAL;
+	if(tmp.pHolding_Tcb == get_cur_tcb())
+		return EDEADLOCK;
 	if(tmp.bLock){
 		//add to sleep queue
 		temp_q = tmp.pSleep_queue;
@@ -91,6 +95,11 @@ int mutex_unlock(int mutex)
 	mutex_t tmp;
 	tcb_t* cur_tcb;
 	disable_interrupts();
+	tmp = gtMutex[mutex];
+	if(tmp.bAvailable)
+		return EINVAL;
+	if(tmp.pHolding_Tcb != get_cur_tcb())
+		return EPERM;
 	cur_tcb = get_cur_tcb();
 	cur_tcb->holds_lock = holds_other_lock(cur_tcb, mutex);
 	if(!cur_tcb->holds_lock){
@@ -98,7 +107,6 @@ int mutex_unlock(int mutex)
 		runqueue_remove(0);
 		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 	}
-	tmp = gtMutex[mutex];
 	if(tmp.pSleep_queue == NULL){
 		tmp.bLock = 0;
 	} else {

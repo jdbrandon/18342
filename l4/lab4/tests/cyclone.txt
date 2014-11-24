@@ -1,0 +1,42 @@
+GUM> fatload mmc 0 a3000000 kernel.bin
+reading kernel.bin
+
+7948 bytes read
+GUM> fatload mmc 0 a0000000 cyclone.bin
+reading cyclone.bin
+
+8072 bytes read
+GUM> go a3000000
+## Starting application at 0xA3000000 ...
+Test begin
+Time now is 11
+Time now is 32
+Time now is 63
+Time now is 103
+Time now is 157
+Time now is 218
+Time now is 288
+Time now is 369
+Time now is 459
+Time now is 559
+Time now is 669
+Time now is 790
+Time now is 920
+Time now is 1061
+Time now is 1212
+Time now is 1372
+Time now is 1543
+Time now is 1723
+Time now is 1913
+Time now is 2114
+Time now is 2324
+Time now is 2544
+Time now is 2774
+Time now is 3014
+Time now is 3264
+Time now is 3524
+Time now is 3794
+Time now is 4075
+Time now is 4365
+Time now is 4665
+Test ends!!

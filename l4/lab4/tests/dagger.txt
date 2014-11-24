@@ -1,0 +1,11 @@
+GUM> fatload mmc 0 a3000000 kernel.bin
+reading kernel.bin
+
+7948 bytes read
+GUM> fatload mmc 0 a0000000 dagger.bin
+reading dagger.bin
+
+624 bytes read
+GUM> go a3000000
+## Starting application at 0xA3000000 ...
+@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@@<@

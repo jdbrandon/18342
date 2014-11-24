@@ -1,0 +1,12 @@
+GUM> fatload mmc 0 a3000000 kernel.bin
+reading kernel.bin
+
+7948 bytes read
+GUM> fatload mmc 0 a0000000 simple_mutex.bin
+reading simple_mutex.bin
+
+1056 bytes read
+GUM> go a3000000
+## Starting application at 0xA3000000 ...
+succes!
+

@@ -46,6 +46,7 @@ int mutex_create(void)
 			enable_interrupts();
 			return i;
 		}
+	enable_interrupts();
 	//set errno??
 	return -1;
 }
@@ -114,10 +115,12 @@ int mutex_unlock(int mutex)
 int holds_other_lock(tcb_t* tcb, int mtx){
 	int i;
 	for(i=0; i<OS_NUM_MUTEX; i++){
-		if(i == mtx) 
+		if(i == mtx){ 
 			continue;
-		if(gtMutex[i].pHolding_Tcb == tcb)
+		}
+		if(gtMutex[i].pHolding_Tcb == tcb){
 			return 1;
+		}
 	}
 	return 0;
 }

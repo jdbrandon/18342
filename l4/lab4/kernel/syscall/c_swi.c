@@ -69,10 +69,10 @@ void c_swi_handler(int swi_num, unsigned *args){
 		*args = mutex_create();
 		break;
 	case MUTEX_LOCK:
-		*args = mutex_lock(*args);
+		*args = mutex_lock(args[0]);
 		break;
 	case MUTEX_UNLOCK:
-		*args = mutex_unlock(*args);
+		*args = mutex_unlock(args[0]);
 		break;
 	default:
 		*args = -0xbadc0de;

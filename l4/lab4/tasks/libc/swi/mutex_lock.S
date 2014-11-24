@@ -14,10 +14,11 @@
 
 FUNC(mutex_lock)
 	push 	{r1}
-	swi	MUTEX_UNLOCK
+	swi	MUTEX_LOCK
 	cmp	r0, #0
 	rsbmi	r0, r0, #0
 	ldrmi	r1, =errno
 	strmi	r0, [r1]
+	movmi	r0, #-1
 	pop	{r1}
 	mov	pc, lr

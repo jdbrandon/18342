@@ -60,7 +60,7 @@ int mutex_lock(int mutex)
 	if(tmp.bAvailable)
 		return -EINVAL;
 	if(tmp.pHolding_Tcb == get_cur_tcb())
-		return EDEADLOCK;
+		return -EDEADLOCK;
 	if(tmp.bLock){
 		//add to sleep queue
 		temp_q = tmp.pSleep_queue;

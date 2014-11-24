@@ -9,6 +9,7 @@
 
 #include <bits/swi.h>
 #include <asm.h>
+#include <errno.h>
 
 	.file "task_create.S"
 	.align 2

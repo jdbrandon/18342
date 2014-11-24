@@ -35,7 +35,7 @@ void swap(task_t*, task_t*);
 int task_create(task_t* tasks, size_t num_tasks)
 {
 	if(num_tasks > OS_MAX_TASKS){
-		return EINVAL;
+		return -EINVAL;
 	}
 	size_t i;
 	sorttasks(tasks, num_tasks);
@@ -45,7 +45,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 			(uint32_t)tasks[i].stack_pos < 0xa0000000 || 
 			(uint32_t)tasks[i].lambda > 0xa2ffffff || 
 			(uint32_t)tasks[i].lambda < 0xa0000000){  
-				return EFAULT;
+				return -EFAULT;
 		}
 		runqueue_add(&system_tcb[i], i+1);
 //		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);

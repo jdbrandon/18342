@@ -71,7 +71,9 @@ int task_create(task_t* tasks, size_t num_tasks)
 
 int event_wait(unsigned int dev)
 {
-	//puts("event waiting...\n");
+	if(dev >= NUM_DEVICES){
+		return -EINVAL;
+	}
 	dev_wait(dev);
 	dispatch_sleep();
   	return 0; /* remove this line after adding your code */	

@@ -14,9 +14,15 @@
 	.global event_wait
 
 FUNC(event_wait)
-	push {r4,lr}
-	mov r4, sp
-	swi EVENT_WAIT
-	mov sp, r4
-	pop {r4,lr}
-	mov pc, lr
+	push 	{r4,lr}
+	mov 	r4, sp
+	swi 	EVENT_WAIT
+	cmp 	r0, #0
+	rsbmi 	r0, r0, #0
+	ldrmi 	r1, =errno
+	strmi 	r0, [r1]
+	movmi 	r0, #-1
+	pop	{r1}
+	mov 	sp, r4
+	pop 	{r4,lr}
+	mov 	pc, lr

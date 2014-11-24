@@ -114,6 +114,8 @@ tcb_t* runqueue_remove(uint8_t prio)
 uint8_t highest_prio(void)
 {
 	uint8_t grp, bit;
+	if(group_run_bits == 0)
+		return IDLE_PRIO;
 	grp = prio_unmap_table[group_run_bits];
 	bit = prio_unmap_table[run_bits[grp]];
 	return (8 * grp) + bit;

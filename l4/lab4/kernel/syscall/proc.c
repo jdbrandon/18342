@@ -41,6 +41,12 @@ int task_create(task_t* tasks, size_t num_tasks)
 	sorttasks(tasks, num_tasks);
 	runqueue_init();
 	for(i = 0; i<num_tasks; i++){
+		if((uint32_t)tasks[i].stack_pos > 0xa2ffffff || 
+			(uint32_t)tasks[i].stack_pos < 0xa0000000 || 
+			(uint32_t)tasks[i].lambda > 0xa2ffffff || 
+			(uint32_t)tasks[i].lambda < 0xa0000000){  
+				return EFAULT;
+		}
 		runqueue_add(&system_tcb[i], i+1);
 		printf("tcb%x: %x\n", (uint32_t)i, (uint32_t)&system_tcb[i]);
 		system_tcb[i].context.r4 = (uint32_t)tasks[i].lambda;

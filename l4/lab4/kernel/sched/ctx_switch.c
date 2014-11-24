@@ -3,7 +3,9 @@
  * @brief C wrappers around assembly context switch routines.
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-11-21
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @date 2014-11-24
  */
  
 
@@ -18,7 +20,7 @@
 #include <exports.h>
 #endif
 
-static tcb_t* cur_tcb; /* use this if needed */
+static tcb_t* cur_tcb; 
 tcb_t* highest_tcb(void);
 
 /**
@@ -43,16 +45,16 @@ void dispatch_init(tcb_t* idle __attribute__((unused)))
  */
 void dispatch_save(void)
 {
-	tcb_t* htcb = highest_tcb();			//get highest priority tcb
+	tcb_t* htcb = highest_tcb();	//get highest priority tcb
+	//if switching from idle, dont save context
 	if(get_cur_prio() == IDLE_PRIO){
 		dispatch_nosave();
 	}
-//	printf("htcb: %x\n", (uint32_t)htcb);
-//	printf("ctcb: %x\n", (uint32_t)cur_tcb);
 	if(cur_tcb != htcb){
 		tcb_t* temp = cur_tcb;
 		cur_tcb = htcb;
-		ctx_switch_full(&htcb->context.r4, &temp->context.r4); 	//full context switch to new task
+		//full context switch to new task
+		ctx_switch_full(&htcb->context.r4, &temp->context.r4);
 	}
 }
 
@@ -82,14 +84,13 @@ void dispatch_sleep(void)
 {
 	tcb_t* htcb = highest_tcb(); 	//get highest priority tcb
 	tcb_t* temp = cur_tcb;
+	//if switching from idle, dont save context
 	if(get_cur_prio() == IDLE_PRIO){
 		dispatch_nosave();
 	}
 	cur_tcb = htcb;
-//	printf("htcb: %x\n",(uint32_t)htcb);
-//	printf("htcblr: %x\n",(uint32_t)htcb->context.lr);
-//	printf("temp: %x\n",(uint32_t)temp);
-	ctx_switch_full(&htcb->context.r4, &temp->context.r4); 	//full context switch to new task
+	//full context switch to new task
+	ctx_switch_full(&htcb->context.r4, &temp->context.r4); 
 }
 
 /**

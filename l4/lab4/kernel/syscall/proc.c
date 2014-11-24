@@ -6,7 +6,10 @@
  * @date   Sun, 14 Oct 2007 00:07:38 -0400
  *
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-11-12
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ *
+ * @date 2014-11-24
  */
 
 #include <exports.h>
@@ -32,6 +35,14 @@ extern void dispatch_sleep(void);
 void sorttasks(task_t*, size_t);
 void swap(task_t*, task_t*);
 
+/**
+ * @brief Takes a list of task structs, schedules them, and runs them
+ *        using a rate monotonic scheduling algorithm. Clobbers any
+ *	  previous tasks set.
+ *
+ * @param tasks  A list of task structs
+ * @param num_tasks  How many tasks_structs in list
+ */
 int task_create(task_t* tasks, size_t num_tasks)
 {
 	if(num_tasks > OS_MAX_TASKS){
@@ -50,7 +61,7 @@ int task_create(task_t* tasks, size_t num_tasks)
 	allocate_tasks(&tasks, num_tasks);
 
 	//should never get to this point
-	return 0; /* remove this line after adding your code */
+	return 0; 
 }
 
 int event_wait(unsigned int dev)
@@ -60,7 +71,7 @@ int event_wait(unsigned int dev)
 	}
 	dev_wait(dev);
 	dispatch_sleep();
-  	return 0; /* remove this line after adding your code */	
+  	return 0; 
 }
 
 /* An invalid syscall causes the kernel to exit. */
@@ -71,6 +82,13 @@ void invalid_syscall(unsigned int call_num  __attribute__((unused)))
 	disable_interrupts();
 	while(1);
 }
+
+/**
+ * @brief Method to sort tasks by their frequency T
+ *
+ * @param tasks  List of task structs
+ * @param count  Size of list
+ */
 
 void sorttasks(task_t* tasks, size_t count){
 	size_t i, j, min = 0, minpos = 0;
@@ -88,6 +106,12 @@ void sorttasks(task_t* tasks, size_t count){
 	}
 }
 
+/**
+ * @brief Method used to swap two tasks
+ *
+ * param a  Task 1
+ * param b  Task 2
+ */
 void swap(task_t* a, task_t* b){
 	task_t tmp;
 	tmp.lambda = a->lambda;

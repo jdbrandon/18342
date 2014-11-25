@@ -3,6 +3,7 @@
 @		the swi number, then calls a swi handler written in c. Before
 @		returning to user mode, register values are restored.
 @ Author: Jeff Brandon <jdbrando@andrew.cmu.edu>
+@ Author: Keane Lucas <kjlucas@andrew.cmu.edu>
 @ Date: Sun Oct 12 18:55:20 UTC 2014
 
 	.file "swi_handler.S"

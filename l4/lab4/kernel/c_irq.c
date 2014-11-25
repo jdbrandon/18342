@@ -19,7 +19,9 @@ void dotime(unsigned*);
 
 extern volatile unsigned rollovercount;
 extern volatile unsigned start_time;
-static unsigned lastoscr = 0xffffffff; //initialize to highest value to avoid initial increment before it is set correctly
+
+//initialize to highest value to avoid initial increment before it is set correctly
+static unsigned lastoscr = 0xffffffff; 
 
 /* c_irq_handler - custom irq handler called by assembly irq handler 
    after state has been saved/restored appropriately.
@@ -31,15 +33,20 @@ void c_irq_handler(){
 	mmio_t ossr = (mmio_t)OSSR;
 	mmio_t osmr0 = (mmio_t)OSMR_0;
 	if(*ossr & OSSR_M0){
-//		puts(" int ");
+		//keep global time by checking if oscr has overlapped start_time
 		if(lastoscr<start_time && *oscr>=start_time){
 			rollovercount++;
 		}
 		lastoscr = *oscr;
 		dotime(&stamp);
+
+		//set next interrupt for 10ms later
 		*osmr0 = *oscr + OSTMR_FREQ/100;
+
+		//unset interrupts
 		*ossr |= OSSR_M0;
-	//	printf("int: %lu\n", (unsigned long)stamp);
+
+		//update devices and switch to highest prio task
 		dev_update((unsigned long)stamp);
 		dispatch_save();
 	}

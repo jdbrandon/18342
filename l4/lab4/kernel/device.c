@@ -3,7 +3,9 @@
  *
  * @brief Implements simulated devices.
  * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date 2008-12-01
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @date 2014-11-24
  */
 
 #include <types.h>
@@ -15,6 +17,8 @@
 #include <arm/reg.h>
 #include <arm/psr.h>
 #include <arm/exception.h>
+
+void dotime(unsigned*);
 
 /**
  * @brief Fake device maintainence structure.
@@ -28,7 +32,6 @@
  * There is a wait queue for every device which contains the tcbs of
  * all tasks waiting on the device event to occur.
  */
-void dotime(unsigned*);
 
 struct dev
 {
@@ -46,11 +49,10 @@ static dev_t devices[NUM_DEVICES];
  */
 void dev_init(void)
 {
-	//WHAT DOES INITIALIZE THE SLEEP QUEUE MEAN?
 	unsigned stamp;
 	dotime(&stamp);
 	int i;
-	for(i=0; i < NUM_DEVICES; i++){		//for every device, set the first timeout for the first period
+	for(i = 0; i < NUM_DEVICES; i++){	//for every device, set the first timeout for the first period
 		devices[i].next_match = (unsigned long)stamp + dev_freq[i];
 	}	
 }
@@ -85,16 +87,16 @@ void dev_wait(unsigned int dev)
  * the interrupt corresponds to the event frequency of a device. If the 
  * interrupt corresponded to the interrupt frequency of a device, this 
  * function should ensure that the task is made ready to run 
+ *
+ * @param millis  milliseconds since start
  */
 void dev_update(unsigned long millis)
 {
-	//query all devices to see if millis is more than next match
 	int i;
 	tcb_t* current;
-//	printf("updating devs... with %lu\n", millis);
 	for(i=0; i < NUM_DEVICES; i++){
-//		printf("dev%d: %lu\n", i, devices[i].next_match);
-		if(devices[i].next_match < millis){
+		//if device has match, activate all tasks on sleep queue
+		if(devices[i].next_match <= millis){
 			current = devices[i].sleep_queue;
 			while(current != NULL){
 				runqueue_add(current, current->cur_prio);

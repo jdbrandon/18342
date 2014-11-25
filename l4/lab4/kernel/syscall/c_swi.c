@@ -6,7 +6,7 @@
    @author Jeff Brandon <jdbrando@andrew.cmu.edu>
    @author Keane Lucas  <kjlucas@andrew.cmu.edu>
 
-   @date 2014-11-06
+   @date 2014-11-23
 */
 
 #include <bits/swi.h>
@@ -61,17 +61,21 @@ void c_swi_handler(int swi_num, unsigned *args){
 		*args = task_create(args[0], args[1]);
 		break;
 	case EVENT_WAIT:
+		/*do event_wait*/
 		disable_interrupts();
 		*args = event_wait(args[0]);
 		enable_interrupts();
 		break;
 	case MUTEX_CREATE:
+		/*do mutex_create*/
 		*args = mutex_create();
 		break;
 	case MUTEX_LOCK:
+		/*do mutex_lock*/
 		*args = mutex_lock(args[0]);
 		break;
 	case MUTEX_UNLOCK:
+		/*do mutex_unlock*/
 		*args = mutex_unlock(args[0]);
 		break;
 	default:

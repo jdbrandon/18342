@@ -46,8 +46,8 @@ void mutex_init();
 void init_sched();
 
 /* global variables */
-unsigned swi_instr1;	//first instruction we clobber
-unsigned swi_instr2;	//second instruction we clobber
+unsigned swi_instr1;
+unsigned swi_instr2;
 unsigned irq_instr1;
 unsigned irq_instr2;
 unsigned lr_k; 		//store value of kernel link register  
@@ -56,20 +56,11 @@ uint32_t global_data;
 volatile unsigned rollovercount;
 volatile unsigned start_time;
 
-/* restore_old_handlers - Restores the instructions at the 
-   uboot swi and irq handlers that are clobbered when this kernel
-   installs its own handlers.
+/* kmain
+	Entry point of our kernel. Performs initial kernel setup tasks including: storing data
+	we clobber, installing a custom swi handler, installing a custom irq handler, initializing
+	system time, initializing the systems mutecies, and transitioning into the user program.
 */
-inline void restore_old_handlers(unsigned* swiaddr, unsigned* irqaddr){
-	unsigned* restore = swiaddr;
-	*restore++ = swi_instr1;
-	*restore = swi_instr2;
-	
-	restore = (unsigned*) irqaddr;
-	*restore++ = irq_instr1;
-	*restore = irq_instr2;
-}
-
 int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused)), uint32_t table)
 {
 	int ret;
@@ -87,7 +78,6 @@ int kmain(int argc __attribute__((unused)), char** argv  __attribute__((unused))
 	/* init other stuff */
 	ret = user_mode(argc, argv, &lr_k, &sp_k);
 	/* should never get here */
-	restore_old_handlers(swiaddr, irqaddr);
 	assert(0);        
 }
 
@@ -101,7 +91,10 @@ void init_timer(){
 	start_time = *oscr;
 	rollovercount = 0;
 }
-
+/* start_timer
+      Set up the interrupt for rollovers occuring by setting OSMR0, OIER, ICMR, and ICLR
+      to appropriate values.
+*/
 void start_timer(){
 	mmio_t osmr0 = (mmio_t)OSMR_0;
         mmio_t oier = (mmio_t)OIER;

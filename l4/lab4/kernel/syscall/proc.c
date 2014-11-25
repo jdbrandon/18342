@@ -32,6 +32,19 @@ extern void dispatch_sleep(void);
 void sorttasks(task_t*, size_t);
 void swap(task_t*, task_t*);
 
+/* task_create syscall implementation
+	Creates a set of tasks provided by a user program and schedules them after
+	allocating appropriate resources and state information. Performs sorting of 
+	tasks, and some error checking for valid memory addresses. Then calls 
+	allocate_tasks to complete task creation. allocate_tasks should not return.
+	
+	Parameters:
+	   tasks - unsorted list of task_t structs initialized by user program
+	   num_tasks - the number of tasks provided for scheduling.
+	
+	Returns:
+	   This function should never return.
+*/
 int task_create(task_t* tasks, size_t num_tasks)
 {
 	if(num_tasks > OS_MAX_TASKS){
@@ -50,9 +63,15 @@ int task_create(task_t* tasks, size_t num_tasks)
 	allocate_tasks(&tasks, num_tasks);
 
 	//should never get to this point
-	return 0; /* remove this line after adding your code */
+	return 0; /*shut up the compiler*/ 
 }
 
+/* event_wait syscall implementation
+	Causes the calling process to halt until an event occurs on the specified device.
+
+	Parameters:
+	   dev - the identifier of the device to wait for.
+*/
 int event_wait(unsigned int dev)
 {
 	if(dev >= NUM_DEVICES){
@@ -72,6 +91,14 @@ void invalid_syscall(unsigned int call_num  __attribute__((unused)))
 	while(1);
 }
 
+/* sorttasks
+	helper function to sort a list of tasks.
+	Highly inefficient but effective select sort algorithm.
+
+	Parameters:
+	   tasks - pointer to the first task_t in the array of tasks
+	   count - the number of tasks in the list
+*/
 void sorttasks(task_t* tasks, size_t count){
 	size_t i, j, min = 0, minpos = 0;
 	for(i = 0; i < (count-1); i++){
@@ -88,6 +115,14 @@ void sorttasks(task_t* tasks, size_t count){
 	}
 }
 
+/* swap (tasks)
+	helper function to swap the memory locations of two tasks.
+	after completion a will now point to the values of b, and b will
+	point to the values in a.
+	Parameters:
+	   a - the first task_t pointer
+	   b - the second task_t pointer
+*/
 void swap(task_t* a, task_t* b){
 	task_t tmp;
 	tmp.lambda = a->lambda;

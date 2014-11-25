@@ -1,12 +1,12 @@
 /**
  * @file mutex.c
  *
- * @brief Implements mutices.
+ * @brief Implementation of mutices.
  *
- * @author Harry Q Bovik < PUT YOUR NAMES HERE
- *
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
  * 
- * @date  
+ * @Nov 23, 2014
  */
 
 //#define DEBUG_MUTEX
@@ -24,6 +24,12 @@
 mutex_t gtMutex[OS_NUM_MUTEX];
 tcb_t* get_cur_tcb(void);
 
+/* mutex_init
+	iterates through gtMutex and initializes mutex state 
+	for each of the kernels muticies. Each is marked as 
+	available and unlocked. Pointers to the sleep queue and
+	the current holding processes tcb are initialized to null.
+*/
 void mutex_init()
 {
 	int i;
@@ -36,6 +42,17 @@ void mutex_init()
 			
 }
 
+/* mutex_create syscall implementation.
+	This function is synchronized by disabling interrupts while it executes.
+	Interrupts are enabled before it returns. This routine searches the array
+	of mutecies for an available mutex. If one is found, its availability is 
+	set to 0 and the index into the mutex array is returned.
+	If there are no available mutecies, ENOMEM is returned.
+	
+	Returns:
+	   Success - The index into the mutex struct array, a unique identifier for the mutex
+	   Error - ENOMEM
+*/
 int mutex_create(void)
 {
 	int i;
@@ -51,6 +68,26 @@ int mutex_create(void)
 	return -ENOMEM;
 }
 
+/* mutex_lock syscall implementation.
+	This routine is used to request mutual exclusion on a mutex.
+	If the mutex is not locked, it becomes locked and the current
+	task is used to set the holding tcb value of the mutex. 
+	If however, the mutex is already locked the current task is placed
+	on the sleep queue of the mutex to be awoken when the mutex is later
+	unlocked.
+	This operation is synchronized, meaning interrupts are disabled while
+	while it is executing and enabled after.
+	
+	Parameters:
+	   mutex - The index into gtMutex where the mutex data structure can be found.
+
+	Returns:
+	   Success - 0
+	   Error - error code
+		EINVAL: invalid argument
+		EDEADLOCK: mutex is already locked by current task.
+		
+*/
 int mutex_lock(int mutex)
 {
 	mutex_t* tmp;
@@ -77,7 +114,6 @@ int mutex_lock(int mutex)
 		}
 		runqueue_remove(get_cur_tcb()->cur_prio);
 		enable_interrupts();
-		//dispatch_sleep();
 		//revoke control of cpu from current process
 		//until the mutex is avaialble.	
 	} else {
@@ -89,9 +125,29 @@ int mutex_lock(int mutex)
 		runqueue_add(cur_tcb, cur_tcb->cur_prio);
 	}
 	enable_interrupts();
-	return 0; // fix this to return the correct value
+	return 0;
 }
 
+/* mutex_unlock syscall implementation.
+	This routine is used by a task that whishes to relinquish its
+	lock on a mutex. This returns the tasks current priority to its
+	native priority.
+	If the mutex has any other tasks actively waiting for access to
+	the mutex in the sleep queue, the current holding task is updated
+	with the first task on the sleep queue and the mutex remains locked.
+	If the mutex has no other tasks waiting for it, the mutex is unlocked.
+
+	Parameters:
+	   mutex - index into the gtMutex struct array
+	
+	Returns:
+	   Success - 0
+	   Error - error code
+	      EINVAL: invalid operand, mutex outside the range of valid mutecies,
+			or mutex is not created.
+	      EPERM: attempt to unlock a mutex that isn't controlled by the
+			current task.
+*/
 int mutex_unlock(int mutex)
 {
 	int holds_other_lock(tcb_t*, int);
@@ -120,10 +176,23 @@ int mutex_unlock(int mutex)
 		runqueue_add(tmp->pHolding_Tcb, 0);
 	}
 	enable_interrupts();
-	//dispatch_save();
 	return 0;
 }
 
+/* holds_other_lock
+	given a tasks tcb and a mutex that is going to be unlocked,
+	determines if the task holds a lock on any other mutecies.
+
+	Parameters:
+	   tcb - pointer to the task control block of the task being tested
+	   mtx - index of mutex being released.
+
+	Returns:
+	   1 if the task specified by tcb currently holds a lock on any mutex
+	   other than the one specified by mtx.
+	   0 is returned if the mutex specified by mtx is the only mutex the
+	   task holds a lock on.
+*/
 int holds_other_lock(tcb_t* tcb, int mtx){
 	int i;
 	for(i=0; i<OS_NUM_MUTEX; i++){

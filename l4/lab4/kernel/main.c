@@ -3,7 +3,7 @@
  *
  * Author: Jeff Brandon <jdbrando@andrew.cmu.edu> 
  *	   Keane Lucas  <kjlucas@andrew.cmu.edu>
- * Date: put the date here
+ * Date: Nov 23, 2014
  */
  
 #include <kernel.h>

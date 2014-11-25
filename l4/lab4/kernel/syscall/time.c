@@ -2,8 +2,9 @@
  *
  * @brief Kernel timer based syscall implementations
  *
- * @author Kartik Subramanian <ksubrama@andrew.cmu.edu>
- * @date   2008-11-16
+ * @author Jeff Brandon <jdbrando@andrew.cmu.edu>
+ * @author Keane Lucas <kjlucas@andrew.cmu.edu>
+ * @date   Nov 23, 2014
  */
 
 #include <types.h>

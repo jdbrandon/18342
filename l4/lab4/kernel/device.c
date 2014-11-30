@@ -67,6 +67,9 @@ void dev_init(void)
 void dev_wait(unsigned int dev)
 {
 	tcb_t* ctcb = get_cur_tcb();
+	if(ctcb->holds_lock){
+		return -EHOLDSLOCK;
+	}
 	runqueue_remove(ctcb->cur_prio);
 	tcb_t* temp = devices[dev].sleep_queue;
 	if(temp == NULL){

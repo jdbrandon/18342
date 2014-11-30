@@ -70,7 +70,9 @@ int event_wait(unsigned int dev)
 	if(dev >= NUM_DEVICES){
 		return -EINVAL;
 	}
-	dev_wait(dev);
+	if(dev_wait(dev)==-EHOLDSLOCK){
+		return -EHOLDSLOCK;
+	}
 	dispatch_sleep();
   	return 0; 
 }

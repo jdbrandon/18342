@@ -17,6 +17,7 @@
 #include <arm/reg.h>
 #include <arm/psr.h>
 #include <arm/exception.h>
+#include <bits/errno.h>
 
 void dotime(unsigned*);
 
@@ -64,7 +65,7 @@ void dev_init(void)
  *
  * @param dev  Device number.
  */
-void dev_wait(unsigned int dev)
+int dev_wait(unsigned int dev)
 {
 	tcb_t* ctcb = get_cur_tcb();
 	if(ctcb->holds_lock){

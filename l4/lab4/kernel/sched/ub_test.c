@@ -43,16 +43,12 @@ int assign_schedule(task_t** tasksptr, size_t num_tasks)
 		util = 0.0;
 		for(j=0; j<i; j++){
 			util += (double)tasks[j].C/(double)tasks[j].T;
-			printf("utilloop: %d\n", (int)(util));
 		}
-		util += ((double)tasks[i].C + (double)tasks[i].B);
-		util /= (double)tasks[i].T;
+		util += ((double)tasks[i].C + (double)tasks[i].B)/(double)tasks[i].T;
 		if(util > ((double)i+1.0)*((double)kroottwo[i]-1.0)){
-			printf("utilfail: %d\n", (int)(util*100000));
 			return 0;
 		}
 	}
-	printf("utildone: %d\n", (int)util*100000);
 	return 1;
 }
 	
